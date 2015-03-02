@@ -23,6 +23,7 @@
         android:layout_marginRight="3dp"
         android:text="3:23"/>
     <TextView
+        android:id="@+id/song_singer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/song_name"
@@ -30,13 +31,14 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginLeft="3dp"
-        android:text="song_singer"/>
+        android:text="Green Day"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:src="@drawable/song_pause"/>
+        android:src="@drawable/song_pause"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
