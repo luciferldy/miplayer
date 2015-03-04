@@ -93,7 +93,7 @@
             android:layout_alignParentRight="true"
             android:textSize="13dp"
             android:text="05:30"/>
-        <ProgressBar
+        <SeekBar
             android:id="@+id/play_progress"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
