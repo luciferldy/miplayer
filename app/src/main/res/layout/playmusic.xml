@@ -52,6 +52,7 @@
         android:visibility="gone">
     </android.support.v4.view.ViewPager>
     <ListView
+        android:id="@+id/play_list"
         android:layout_width="fill_parent"
         android:layout_height="350dp"
         android:background="#FFFFFF"
@@ -63,7 +64,7 @@
         android:layout_height="85dp"
         android:background="#2b2b2b">
         <ImageButton
-            android:id="@+id/play_start"
+            android:id="@+id/play_paused"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginLeft="20dp"
@@ -76,7 +77,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/play_start"
+            android:layout_toLeftOf="@id/play_paused"
             android:src="@drawable/ic_music_previous"
             android:background="#00000000"/>
         <ImageButton
@@ -84,7 +85,7 @@
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/play_start"
+            android:layout_toRightOf="@id/play_paused"
             android:src="@drawable/ic_music_next"
             android:background="#00000000"/>
     </RelativeLayout>
@@ -93,14 +94,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="3dp">
         <TextView
-            android:id="@+id/play_time"
+            android:id="@+id/play_currenttime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:textSize="13dp"
             android:text="02:20"/>
         <TextView
-            android:id="@+id/play_duration"
+            android:id="@+id/play_totaltime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
@@ -110,7 +111,7 @@
             android:id="@+id/play_progress"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/play_time"
+            android:layout_below="@id/play_currenttime"
             android:layout_marginTop="5dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:progress="50"/>
