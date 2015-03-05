@@ -32,4 +32,9 @@ public class HeadPhoneBroadcastReceiver extends BroadcastReceiver{
             }
         }
     }
+
+    public void registerMusicPlayerService(MusicPlayerService musicPlayerService){
+        if (mMusicPlayerService != null)
+            mMusicPlayerService = musicPlayerService;
+    }
 }
