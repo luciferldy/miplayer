@@ -94,7 +94,7 @@ public class PlaceholderFragment extends Fragment {
         mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
 
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
-        mTotalTime.setText("/ 0:00");
+        mTotalTime.setText("5:30");
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
         mCurrentTime.setText("0:00");
 
