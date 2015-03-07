@@ -3,12 +3,14 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:paddingTop="3dp"
+    android:paddingBottom="3dp"
+    android:paddingLeft="6dp">
     <TextView
         android:id="@+id/song_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
+        android:textSize="15dp"
         android:layout_alignParentLeft="true"
         android:textStyle="bold"
         android:text="21 guns"/>
@@ -18,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/song_name"
         android:layout_alignParentLeft="true"
+        android:textSize="12dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginRight="3dp"
@@ -28,6 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/song_name"
         android:layout_toRightOf="@id/song_duration"
+        android:textSize="12dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginLeft="3dp"

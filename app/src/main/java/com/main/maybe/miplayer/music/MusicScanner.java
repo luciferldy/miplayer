@@ -17,7 +17,7 @@ public class MusicScanner {
 
     public void scanMusic(Context context){
 
-        // 下面的命令将返回所有在外部存储卡上的音乐文件的信息
+        // can get all the music files from SD
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
                 MediaStore.Audio.Media.DEFAULT_SORT_ORDER);

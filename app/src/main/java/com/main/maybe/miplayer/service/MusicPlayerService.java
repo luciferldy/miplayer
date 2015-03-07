@@ -8,6 +8,7 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
@@ -16,7 +17,6 @@ import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.music.Music;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,8 +36,19 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     private HeadPhoneBroadcastReceiver mHeadPhoneBroadcastReceiver;
     private SeekBar mSeekBar;
+    private TextView playTitle;
+    private TextView playAlbum;
+    private TextView playArtist;
+    private TextView playCurrentTime;
 
     private AsyncTask<Void, Void, Void> seekBarChanger;
+
+    public void registerMusicInfor(TextView playTitle, TextView playAlbum, TextView playArtist, TextView playCurrentTime){
+        this.playTitle = playTitle;
+        this.playAlbum = playAlbum;
+        this.playArtist = playArtist;
+        this.playCurrentTime = playCurrentTime;
+    }
 
     public void registerSeekBar(SeekBar mSeekBar){
         this.mSeekBar = mSeekBar;
@@ -51,12 +62,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     @Override
     public void addMusicToQueue(List<Music> music) {
         mNowPlaying.addMusicToQueue(music);
-    }
-
-    // 切换列表
-    public void changeQueue(ArrayList<Music> list){
-        mNowPlaying.clearQueue();
-        mNowPlaying.addMusicToQueue(list);
     }
 
     @Override
@@ -152,7 +157,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         playFetched(mNowPlaying.previous().getMusicLocation());
     }
 
-    // 播放选中
+    // play music selected
     public synchronized void playFetched(String path){
         state = PLAYING;
         mMediaPlayer.stop();
@@ -167,11 +172,20 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     mSeekBar.setMax(totalTime*1000);
 
                     int minutes = totalTime/60, seconds = totalTime%60;
-                    if (seconds >= 10){
-                        mMusicPlayerServiceBinder.setTotalTime("/ "+minutes+":"+seconds);
-                    }else{
-                        mMusicPlayerServiceBinder.setTotalTime("/ "+minutes+":0"+seconds);
+                    if (minutes >= 10 && seconds >= 10){
+                        mMusicPlayerServiceBinder.setTotalTime(""+minutes+":"+seconds);
+                    }else if (minutes >= 10 && seconds < 10){
+                        mMusicPlayerServiceBinder.setTotalTime(""+minutes+":0"+seconds);
+                    }else if (minutes < 10 && seconds >= 10){
+                        mMusicPlayerServiceBinder.setTotalTime("0"+minutes+":"+seconds);
+                    }else {
+                        mMusicPlayerServiceBinder.setTotalTime("0"+minutes+":0"+seconds);
                     }
+
+                    // set music information
+//                    playTitle.setText(mNowPlaying.getCurrentPlaying().getName());
+//                    playAlbum.setText(mNowPlaying.getCurrentPlaying().getAlbum());
+//                    playArtist.setText(mNowPlaying.getCurrentPlaying().getArtist());
 
                     play();
                     setSeekBarTracker();
@@ -197,10 +211,22 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         seekBarChanger = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                while(mMediaPlayer != null && mMediaPlayer.getCurrentPosition() <mMediaPlayer.getDuration()){
+                while(mMediaPlayer != null && mMediaPlayer.getCurrentPosition() < mMediaPlayer.getDuration()){
                     if (state == PLAYING){
                         int currentPosition = mMediaPlayer.getCurrentPosition();
                         mSeekBar.setProgress(currentPosition);
+
+//                        // set current time
+//                        int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
+//                        if (minutes >= 10 && seconds >= 10){
+//                            playCurrentTime.setText("" + minutes + ":" + seconds);
+//                        }else if (minutes >= 10 && seconds < 10){
+//                            playCurrentTime.setText("" + minutes + ":0" + seconds);
+//                        }else if (minutes < 10 && seconds >= 10){
+//                            playCurrentTime.setText("0" + minutes + ":" + seconds);
+//                        }else {
+//                            playCurrentTime.setText("0" + minutes + ":0" + seconds);
+//                        }
                     }
                     try{
                         Thread.sleep(100);
@@ -213,4 +239,5 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         };
         seekBarChanger.execute();
     }
+
 }

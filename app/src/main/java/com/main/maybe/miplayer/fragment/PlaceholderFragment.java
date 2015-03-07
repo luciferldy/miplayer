@@ -50,6 +50,11 @@ public class PlaceholderFragment extends Fragment {
     private TextView mCurrentTime;
     private ListView listOfFiles;
     private ImageButton playPausedButton;
+    private ImageButton playPreviousButton;
+    private ImageButton playNextButton;
+    private TextView playTitle;
+    private TextView playAlbum;
+    private TextView playArtist;
 
     MusicPlayerService mService;
     MusicPlayerServiceBinder mBinder;
@@ -71,7 +76,11 @@ public class PlaceholderFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.playmusic, container, false);
 
-        library = new ArrayList<Music>();
+        playTitle = (TextView)rootView.findViewById(R.id.play_song_name);
+        playAlbum = (TextView)rootView.findViewById(R.id.play_album);
+        playArtist = (TextView)rootView.findViewById(R.id.play_singer);
+
+        library = new ArrayList<>();
 
         final MusicScanner musicScanner = new MusicScanner();
         listOfFiles = (ListView)rootView.findViewById(R.id.play_list);
@@ -86,15 +95,29 @@ public class PlaceholderFragment extends Fragment {
 
         playPausedButton = (ImageButton)rootView.findViewById(R.id.play_paused);
         playPausedButton.setClickable(false);
+        playPreviousButton = (ImageButton)rootView.findViewById(R.id.play_previous);
+        playPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mService.playPrevious();
+            }
+        });
+        playPreviousButton.setClickable(false);
+        playNextButton = (ImageButton)rootView.findViewById(R.id.play_next);
+        playNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mService.playNext();
+            }
+        });
+        playNextButton.setClickable(false);
 
         mSeekBar = (SeekBar) rootView.findViewById(R.id.play_progress);
-        setmOnSeekBarChangeListener();
+        initOnSeekBarChangeListener();
         mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
 
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
-        mTotalTime.setText("5:30");
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
-        mCurrentTime.setText("0:00");
 
         defineServiceConnection();// we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
@@ -105,7 +128,7 @@ public class PlaceholderFragment extends Fragment {
         return rootView;
     }
 
-    private void setmOnSeekBarChangeListener(){
+    private void initOnSeekBarChangeListener(){
         mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -155,6 +178,8 @@ public class PlaceholderFragment extends Fragment {
                 state = mService.getState();
                 setPlayPauseOnClickListener();
                 mService.registerSeekBar(mSeekBar);
+                mService.registerMusicInfor(playTitle, playAlbum, playArtist, mCurrentTime);
+
                 mBound = true;
 
                 if (filePaths != null)
@@ -173,8 +198,14 @@ public class PlaceholderFragment extends Fragment {
 
     private synchronized void initQueue(){
         mService.addMusicToQueue(library);
+
+        // change the state of the play or paused button
+        playPausedButton.setImageResource(R.drawable.song_pause);
+
         mService.playNext();
         playPausedButton.setClickable(true);
+        playPreviousButton.setClickable(true);
+        playNextButton.setClickable(true);
     }
 
     private void createLibrary(final MusicScanner musicScanner){
@@ -251,4 +282,5 @@ public class PlaceholderFragment extends Fragment {
             }
         };
     }
+
 }

@@ -30,29 +30,37 @@ public class Music {
             +" does not exist.");
     }
 
-    // 填写歌曲信息
+    // write information of song
     private void populateMusicData(File file){
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(file.getAbsolutePath());
+        try{
+            mmr.setDataSource(file.getAbsolutePath());
 
-        this.file = file;
+            this.file = file;
 
-        String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-        String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-        String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);// 播放时长为毫秒
+            String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+            String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);// measuring by ms
 
-        Log.d("fuck it "+LOG_TAG, "标题："+name+"歌手："+artist);
-        if (name != null && !name.equals(""))
-            this.name = name;
-        if (artist != null && !artist.equals(""))
-            this.artist = artist;
-        if (album != null && !album.equals(""))
-            this.album = album;
-        if (duration != null && !duration.equals("")){
-            this.duration = duration;
-            this.time = Integer.parseInt(this.duration)/1000;
+            if (name != null && !name.equals(""))
+                this.name = name;
+            if (artist != null && !artist.equals(""))
+                this.artist = artist;
+            if (album != null && !album.equals(""))
+                this.album = album;
+            if (duration != null && !duration.equals("")){
+                this.duration = duration;
+                this.time = Integer.parseInt(this.duration)/1000;
+            }
+
+        }catch(IllegalArgumentException e){
+            e.printStackTrace();
+        }catch (IllegalStateException e){
+            e.printStackTrace();
         }
+
+
     }
 
     public String getMusicLocation(){
@@ -69,6 +77,10 @@ public class Music {
 
     public String getArtist(){
         return artist;
+    }
+
+    public String getAlbum() {
+        return album;
     }
 
     public int getTimesPlayed(){

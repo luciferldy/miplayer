@@ -16,6 +16,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="2dp"
+            android:scaleType="centerCrop"
             android:layout_marginRight="10dp"
             android:layout_alignParentLeft="true"
             android:src="@drawable/ic_play_back"
@@ -27,7 +28,7 @@
             android:layout_toRightOf="@id/play_back"
             android:textStyle="bold"
             android:textSize="23sp"
-            android:text="21 Guns"/>
+            android:text=""/>
         <TextView
             android:id="@+id/play_album"
             android:layout_width="wrap_content"
@@ -36,7 +37,7 @@
             android:layout_below="@id/play_song_name"
             android:layout_marginRight="5dp"
             android:textSize="15sp"
-            android:text="American Idiot"/>
+            android:text=""/>
         <TextView
             android:id="@+id/play_singer"
             android:layout_width="wrap_content"
@@ -44,7 +45,7 @@
             android:layout_below="@id/play_song_name"
             android:layout_toRightOf="@id/play_album"
             android:textSize="15sp"
-            android:text="The Green Day"/>
+            android:text=""/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/play_messageend"
@@ -58,14 +59,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:textSize="13dp"
-            android:text="02:20"/>
+            android:hint="00:00"/>
         <TextView
             android:id="@+id/play_totaltime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:textSize="13dp"
-            android:text="05:30"/>
+            android:hint="00:00"/>
         <SeekBar
             android:id="@+id/play_progress"
             android:layout_width="fill_parent"
@@ -73,7 +74,7 @@
             android:layout_below="@id/play_currenttime"
             android:layout_marginTop="5dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:progress="50"/>
+            android:progress="0"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/play_messageoperation"
@@ -88,21 +89,24 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_centerInParent="true"
+            android:scaleType="centerCrop"
             android:src="@drawable/song_play"
             android:background="#00000000"/>
         <ImageButton
-            android:id="@+id/play_precious"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_centerVertical="true"
+            android:id="@+id/play_previous"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
             android:layout_toLeftOf="@id/play_paused"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_music_previous"
             android:background="#00000000"/>
         <ImageButton
             android:id="@+id/play_next"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_centerVertical="true"
+            android:scaleType="centerCrop"
             android:layout_toRightOf="@id/play_paused"
             android:src="@drawable/ic_music_next"
             android:background="#00000000"/>
@@ -113,7 +117,7 @@
         android:layout_height="match_parent"
         android:layout_below="@id/play_messagetitle"
         android:layout_above="@id/play_messageoperation"
-        android:background="#FFFFFF"
+        android:background="#00000000"
         android:divider="#00000000"
         android:dividerHeight="3dp">
     </ListView>
