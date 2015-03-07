@@ -72,9 +72,12 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/play_currenttime"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
             android:layout_marginTop="5dp"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:progress="0"/>
+            android:progress="0"
+            android:indeterminate="false" />
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/play_messageoperation"

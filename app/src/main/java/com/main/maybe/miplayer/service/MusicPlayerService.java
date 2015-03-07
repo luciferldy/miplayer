@@ -6,7 +6,10 @@ import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
@@ -37,6 +40,36 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private SeekBar mSeekBar;
 
     private AsyncTask<Void, Void, Void> seekBarChanger;
+
+    private String LOG_TAG = MusicPlayerService.class.getSimpleName();
+
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0:
+                    int currentPosition = (int)msg.obj;
+                    if (mMusicPlayerServiceBinder != null || currentPosition == 0){
+
+                        int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
+                        if (minutes >= 10 && seconds >= 10){
+                            mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":" + seconds);
+                        }else if (minutes >= 10 && seconds < 10){
+                            mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":0" + seconds);
+                        }else if (minutes < 10 && seconds >= 10){
+                            mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":" + seconds);
+                        }else {
+                            mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":0" + seconds);
+                        }
+                    }
+                    break;
+                case 1:
+                    Log.d(LOG_TAG, "handle message fail.");
+                    break;
+            }
+
+        }
+    };
 
     public void registerSeekBar(SeekBar mSeekBar){
         this.mSeekBar = mSeekBar;
@@ -210,33 +243,18 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     if (state == PLAYING){
                         currentPosition = mMediaPlayer.getCurrentPosition();
                         mSeekBar.setProgress(currentPosition);
+                        // send to ui thread
+                        handler.obtainMessage(0, currentPosition).sendToTarget();
                     }
                     try{
                         Thread.sleep(100);
                     }catch (InterruptedException e){
-
+                        e.printStackTrace();
                     }
                 }
                 return null;
             }
 
-            @Override
-            protected void onProgressUpdate(Void... values) {
-                if (mMusicPlayerServiceBinder != null || currentPosition == 0){
-
-                    int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
-                    if (minutes >= 10 && seconds >= 10){
-                        mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":" + seconds);
-                    }else if (minutes >= 10 && seconds < 10){
-                        mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":0" + seconds);
-                    }else if (minutes < 10 && seconds >= 10){
-                        mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":" + seconds);
-                    }else {
-                        mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":0" + seconds);
-                    }
-                }
-                super.onProgressUpdate(values);
-            }
         };
         seekBarChanger.execute();
     }
