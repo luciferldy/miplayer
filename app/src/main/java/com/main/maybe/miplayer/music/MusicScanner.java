@@ -1,6 +1,10 @@
 package com.main.maybe.miplayer.music;
 
-import java.io.File;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.provider.MediaStore;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,23 +13,16 @@ import java.util.List;
  */
 public class MusicScanner {
 
-    private static List<String> allFiles = new ArrayList<String>();
+    private List<String> allFiles = new ArrayList<String>();
 
-    public void scanMusic(String path, int level){
-        File origin = new File(path);
-        File[] files = origin.listFiles();
+    public void scanMusic(Context context){
 
-        if (files == null)
-            return ;
-        for (File file : files){
-            // 筛选文件夹
-            if (file.isDirectory() && !file.isHidden() && file.canRead() && level>0){
-                scanMusic(path+"/"+file.getName(), level-1);
-            }
-            // 筛选文件
-            else if (file.isFile() && file.canRead() && file.getName().endsWith("mp3")){
-                allFiles.add(file.getAbsolutePath());
-            }
+        // 下面的命令将返回所有在外部存储卡上的音乐文件的信息
+        ContentResolver contentResolver = context.getContentResolver();
+        Cursor cursor = contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
+                MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
+        while (cursor.moveToNext()){
+            allFiles.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)));
         }
     }
 

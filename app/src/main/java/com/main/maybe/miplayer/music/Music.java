@@ -29,23 +29,6 @@ public class Music {
             Log.w(LOG_TAG, "Music file at "+filePath
             +" does not exist.");
     }
-    public Music(Music music){
-        file = music.file;
-        name = music.name;
-        artist = music.artist;
-        album = music.album;
-        timesPlayed = music.timesPlayed;
-        duration = music.duration;
-        albumCover = music.albumCover;
-        Log.d(LOG_TAG, "Done making the music object with following data:　"+toString());
-    }
-    public Music(File file, String name, String artist, String album, String duration){
-        this.file = file;
-        this.name = name;
-        this.artist = artist;
-        this.album = album;
-        this.duration = duration;
-    }
 
     // 填写歌曲信息
     private void populateMusicData(File file){
@@ -57,8 +40,9 @@ public class Music {
         String name = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         String artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         String album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
-        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);// 播放时长为毫秒
 
+        Log.d("fuck it "+LOG_TAG, "标题："+name+"歌手："+artist);
         if (name != null && !name.equals(""))
             this.name = name;
         if (artist != null && !artist.equals(""))

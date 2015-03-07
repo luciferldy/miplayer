@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -59,7 +58,6 @@ public class PlaceholderFragment extends Fragment {
     boolean mBound = false;
 
     List<String> filePaths = null;
-    String typOfOrders[] = {"Title", "Artist"};
 
     int state;
 
@@ -183,7 +181,7 @@ public class PlaceholderFragment extends Fragment {
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... params) {
-                musicScanner.scanMusic(Environment.getExternalStorageDirectory().getAbsolutePath()+"/Music", 6);
+                musicScanner.scanMusic(getActivity());
                 return null;
             }
 
@@ -197,7 +195,6 @@ public class PlaceholderFragment extends Fragment {
                 }
 
                 mMusicViewAdapter.notifyDataSetChanged();
-
                 if (mBound)
                     initQueue();
             }
