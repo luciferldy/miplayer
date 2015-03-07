@@ -31,7 +31,6 @@ import com.main.maybe.miplayer.music.MusicViewAdapter;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -99,6 +98,7 @@ public class PlaceholderFragment extends Fragment {
         playPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playPrevious();
             }
         });
@@ -107,6 +107,8 @@ public class PlaceholderFragment extends Fragment {
         playNextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // set the icon play
+                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playNext();
             }
         });
@@ -121,7 +123,7 @@ public class PlaceholderFragment extends Fragment {
 
         defineServiceConnection();// we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
-        , Context.BIND_AUTO_CREATE);
+                , Context.BIND_AUTO_CREATE);
 
         createLibrary(musicScanner);
 
@@ -173,12 +175,41 @@ public class PlaceholderFragment extends Fragment {
                         if (mTotalTime != null)
                             mTotalTime.setText(time);
                     }
+
+                    @Override
+                    public void setMusicTitle(String title) {
+                        if (playTitle != null)
+                            playTitle.setText(title);
+                    }
+
+                    @Override
+                    public void setMusicArtist(String artist) {
+                        if (playArtist != null)
+                            playArtist.setText(artist);
+                    }
+
+                    @Override
+                    public void setMusicAlbum(String album) {
+                        if (playAlbum != null)
+                            playAlbum.setText(album);
+                    }
+
+                    @Override
+                    public void setImagePlay() {
+                        if (playPausedButton != null)
+                            playPausedButton.setImageResource(R.drawable.song_play);
+                    }
+
+                    @Override
+                    public void setImagePaused() {
+                        if (playPausedButton != null)
+                            playPausedButton.setImageResource(R.drawable.song_pause);
+                    }
                 });
 
                 state = mService.getState();
                 setPlayPauseOnClickListener();
                 mService.registerSeekBar(mSeekBar);
-                mService.registerMusicInfor(playTitle, playAlbum, playArtist, mCurrentTime);
 
                 mBound = true;
 
@@ -198,10 +229,6 @@ public class PlaceholderFragment extends Fragment {
 
     private synchronized void initQueue(){
         mService.addMusicToQueue(library);
-
-        // change the state of the play or paused button
-        playPausedButton.setImageResource(R.drawable.song_pause);
-
         mService.playNext();
         playPausedButton.setClickable(true);
         playPreviousButton.setClickable(true);
@@ -226,6 +253,7 @@ public class PlaceholderFragment extends Fragment {
                 }
 
                 mMusicViewAdapter.notifyDataSetChanged();
+                Log.d(LOG_TAG, "notifyDataSetChanged");
                 if (mBound)
                     initQueue();
             }
@@ -258,29 +286,6 @@ public class PlaceholderFragment extends Fragment {
                 }
             }
         });
-    }
-
-    public void setCurrentTime(String time){
-        if (mCurrentTime != null)
-            mCurrentTime.setText(time);
-    }
-
-    public void setmTotalTime(String time){
-        if (mTotalTime != null)
-            mTotalTime.setText(time);
-    }
-
-    private Comparator<Music> getComparator(final int position){
-        return new Comparator<Music>(){
-            @Override
-            public int compare(Music lhs, Music rhs) {
-                if (position == 0)
-                    return (lhs.getName()).compareTo(rhs.getName());
-                else if (position == 1)
-                    return (lhs.getArtist()).compareTo(rhs.getArtist());
-                return 0;
-            }
-        };
     }
 
 }

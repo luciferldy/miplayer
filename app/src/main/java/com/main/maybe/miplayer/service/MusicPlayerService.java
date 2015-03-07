@@ -8,7 +8,6 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
@@ -36,19 +35,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     private HeadPhoneBroadcastReceiver mHeadPhoneBroadcastReceiver;
     private SeekBar mSeekBar;
-    private TextView playTitle;
-    private TextView playAlbum;
-    private TextView playArtist;
-    private TextView playCurrentTime;
 
     private AsyncTask<Void, Void, Void> seekBarChanger;
-
-    public void registerMusicInfor(TextView playTitle, TextView playAlbum, TextView playArtist, TextView playCurrentTime){
-        this.playTitle = playTitle;
-        this.playAlbum = playAlbum;
-        this.playArtist = playArtist;
-        this.playCurrentTime = playCurrentTime;
-    }
 
     public void registerSeekBar(SeekBar mSeekBar){
         this.mSeekBar = mSeekBar;
@@ -142,6 +130,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public void play() {
         state = PLAYING;
         mMediaPlayer.start();
+        if (mMusicPlayerServiceBinder != null)
+            mMusicPlayerServiceBinder.setImagePaused();
     }
 
     @Override
@@ -150,10 +140,14 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     }
 
     public synchronized void playNext(){
+        if (mMusicPlayerServiceBinder != null)
+            mMusicPlayerServiceBinder.setImagePlay();
         playFetched(mNowPlaying.next().getMusicLocation());
     }
 
     public synchronized void playPrevious(){
+        if (mMusicPlayerServiceBinder != null)
+            mMusicPlayerServiceBinder.setImagePlay();
         playFetched(mNowPlaying.previous().getMusicLocation());
     }
 
@@ -183,9 +177,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     }
 
                     // set music information
-//                    playTitle.setText(mNowPlaying.getCurrentPlaying().getName());
-//                    playAlbum.setText(mNowPlaying.getCurrentPlaying().getAlbum());
-//                    playArtist.setText(mNowPlaying.getCurrentPlaying().getArtist());
+                    mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.getCurrentPlaying().getName());
+                    mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.getCurrentPlaying().getAlbum());
+                    mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.getCurrentPlaying().getArtist());
 
                     play();
                     setSeekBarTracker();
@@ -209,24 +203,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         }
         seekBarChanger = null;
         seekBarChanger = new AsyncTask<Void, Void, Void>() {
+            int currentPosition = 0;
             @Override
             protected Void doInBackground(Void... params) {
                 while(mMediaPlayer != null && mMediaPlayer.getCurrentPosition() < mMediaPlayer.getDuration()){
                     if (state == PLAYING){
-                        int currentPosition = mMediaPlayer.getCurrentPosition();
+                        currentPosition = mMediaPlayer.getCurrentPosition();
                         mSeekBar.setProgress(currentPosition);
-
-//                        // set current time
-//                        int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
-//                        if (minutes >= 10 && seconds >= 10){
-//                            playCurrentTime.setText("" + minutes + ":" + seconds);
-//                        }else if (minutes >= 10 && seconds < 10){
-//                            playCurrentTime.setText("" + minutes + ":0" + seconds);
-//                        }else if (minutes < 10 && seconds >= 10){
-//                            playCurrentTime.setText("0" + minutes + ":" + seconds);
-//                        }else {
-//                            playCurrentTime.setText("0" + minutes + ":0" + seconds);
-//                        }
                     }
                     try{
                         Thread.sleep(100);
@@ -235,6 +218,24 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     }
                 }
                 return null;
+            }
+
+            @Override
+            protected void onProgressUpdate(Void... values) {
+                if (mMusicPlayerServiceBinder != null || currentPosition == 0){
+
+                    int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
+                    if (minutes >= 10 && seconds >= 10){
+                        mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":" + seconds);
+                    }else if (minutes >= 10 && seconds < 10){
+                        mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":0" + seconds);
+                    }else if (minutes < 10 && seconds >= 10){
+                        mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":" + seconds);
+                    }else {
+                        mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":0" + seconds);
+                    }
+                }
+                super.onProgressUpdate(values);
             }
         };
         seekBarChanger.execute();

@@ -24,15 +24,39 @@ public class MusicPlayerServiceBinder extends Binder {
         return mMusicPlayerService;
     }
 
-    public synchronized void setCurrentTime(String time){
-        if (mApplication != null && mSeekBarTextCallBack != null){
-            mSeekBarTextCallBack.setCurrentTime(time);
-        }
+    public void setTotalTime(String time){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setTotalTime(time);
     }
 
-    public void setTotalTime(String time){
-        if (mApplication != null && mSeekBarTextCallBack != null){
-            mSeekBarTextCallBack.setTotalTime(time);
-        }
+    public void setCurrentTime(String time){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setCurrentTime(time);
     }
+
+    public void setMusicTitle(String title){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setMusicTitle(title);
+    }
+
+    public void setMusicAlbum(String album){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setMusicAlbum(album);
+    }
+
+    public void setMusicArtist(String artist){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setMusicArtist(artist);
+    }
+
+    public void setImagePlay(){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setImagePlay();
+    }
+
+    public void setImagePaused(){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setImagePaused();
+    }
+
 }
