@@ -274,7 +274,6 @@ public class PlaceholderFragment extends Fragment {
             public void onClick(View v) {
                 if (mBound){
                     state = mService.changeState();
-
                     switch (state){
                         case MusicPlayerService.PLAYING:
                             playPausedButton.setImageResource(R.drawable.song_pause);

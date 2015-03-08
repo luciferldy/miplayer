@@ -96,9 +96,19 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     }
 
     @Override
+    public void play() {
+        state = PLAYING;
+        mMediaPlayer.start();
+        if (mMusicPlayerServiceBinder != null)
+            mMusicPlayerServiceBinder.setImagePaused();
+    }
+
+    @Override
     public void pause() {
         state = PAUSED;
         mMediaPlayer.pause();
+        if (mMusicPlayerServiceBinder != null)
+            mMusicPlayerServiceBinder.setImagePlay();
     }
 
     public int changeState(){
@@ -157,14 +167,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public int getState(){
         return state;
-    }
-
-    @Override
-    public void play() {
-        state = PLAYING;
-        mMediaPlayer.start();
-        if (mMusicPlayerServiceBinder != null)
-            mMusicPlayerServiceBinder.setImagePaused();
     }
 
     @Override
