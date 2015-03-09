@@ -230,6 +230,8 @@ public class PlaceholderFragment extends Fragment {
     private synchronized void initQueue(){
         mService.addMusicToQueue(library);
         mService.playNext();
+
+        // set button clickable
         playPausedButton.setClickable(true);
         playPreviousButton.setClickable(true);
         playNextButton.setClickable(true);
