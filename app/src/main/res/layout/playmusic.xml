@@ -28,7 +28,7 @@
             android:layout_toRightOf="@id/play_back"
             android:textStyle="bold"
             android:textSize="23sp"
-            android:text=""/>
+            android:hint="21 Guns"/>
         <TextView
             android:id="@+id/play_album"
             android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_below="@id/play_song_name"
             android:layout_marginRight="5dp"
             android:textSize="15sp"
-            android:text=""/>
+            android:text="American Idiot"/>
         <TextView
             android:id="@+id/play_singer"
             android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
             android:layout_below="@id/play_song_name"
             android:layout_toRightOf="@id/play_album"
             android:textSize="15sp"
-            android:text=""/>
+            android:hint="Green Day"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/play_messageend"
