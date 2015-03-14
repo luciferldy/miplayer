@@ -9,13 +9,11 @@ import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.Toast;
@@ -106,6 +104,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     @Override
     public void play() {
         state = PLAYING;
+        showButtonNotify();
         mMediaPlayer.start();
         if (mMusicPlayerServiceBinder != null)
             mMusicPlayerServiceBinder.setImagePaused();
@@ -179,7 +178,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public void play(int position) {
-        showButtonNotify();
         playFetched(mNowPlaying.playGet(position).getMusicLocation());
     }
 
@@ -279,18 +277,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
         mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
         //API3.0 以上的时候显示按钮，否则消失
-        mRemoteViews.setTextViewText(R.id.notification_artist, "周杰伦");
-        mRemoteViews.setTextViewText(R.id.notification_songtitle, "七里香");
-        //如果版本号低于（3。0），那么不显示按钮
-        if(Build.VERSION.SDK_INT <= 9){
-            mRemoteViews.setViewVisibility(R.id.notification_previous, View.GONE);
-            mRemoteViews.setViewVisibility(R.id.notification_play, View.GONE);
-            mRemoteViews.setViewVisibility(R.id.notification_next, View.GONE);
-        }else{
-            mRemoteViews.setViewVisibility(R.id.notification_previous, View.VISIBLE);
-            mRemoteViews.setViewVisibility(R.id.notification_play, View.VISIBLE);
-            mRemoteViews.setViewVisibility(R.id.notification_next, View.VISIBLE);
-        }
+        mRemoteViews.setTextViewText(R.id.notification_artist, mNowPlaying.getCurrentPlaying().getArtist());
+        mRemoteViews.setTextViewText(R.id.notification_songtitle, mNowPlaying.getCurrentPlaying().getName());
         // 状态是播放
         if(state == PLAYING){
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_pause);
@@ -318,6 +306,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 .setTicker("正在播放")
                 .setPriority(Notification.PRIORITY_DEFAULT)// 设置该通知优先级
                 .setOngoing(true)
+                .setAutoCancel(true)
                 .setSmallIcon(R.drawable.ic_launcher);
         Notification notify = mBuilder.build();
         notify.flags = Notification.FLAG_ONGOING_EVENT;
