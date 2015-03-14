@@ -10,7 +10,8 @@
     <RelativeLayout
         android:id="@+id/play_messagetitle"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp">
         <ImageButton
             android:id="@+id/play_back"
             android:layout_width="50dp"

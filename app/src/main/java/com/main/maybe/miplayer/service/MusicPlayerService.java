@@ -1,20 +1,28 @@
 package com.main.maybe.miplayer.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
 import com.main.maybe.miplayer.Queue;
+import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.music.Music;
 
@@ -171,6 +179,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public void play(int position) {
+        showButtonNotify();
         playFetched(mNowPlaying.playGet(position).getMusicLocation());
     }
 
@@ -261,4 +270,57 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         seekBarChanger.execute();
     }
 
+    /**
+     * 带按钮的通知栏
+     */
+    public void showButtonNotify(){
+        NotificationManager mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
+        RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
+        mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
+        //API3.0 以上的时候显示按钮，否则消失
+        mRemoteViews.setTextViewText(R.id.notification_artist, "周杰伦");
+        mRemoteViews.setTextViewText(R.id.notification_songtitle, "七里香");
+        //如果版本号低于（3。0），那么不显示按钮
+        if(Build.VERSION.SDK_INT <= 9){
+            mRemoteViews.setViewVisibility(R.id.notification_previous, View.GONE);
+            mRemoteViews.setViewVisibility(R.id.notification_play, View.GONE);
+            mRemoteViews.setViewVisibility(R.id.notification_next, View.GONE);
+        }else{
+            mRemoteViews.setViewVisibility(R.id.notification_previous, View.VISIBLE);
+            mRemoteViews.setViewVisibility(R.id.notification_play, View.VISIBLE);
+            mRemoteViews.setViewVisibility(R.id.notification_next, View.VISIBLE);
+        }
+        // 状态是播放
+        if(state == PLAYING){
+            mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_pause);
+        }else{
+            mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
+        }
+        //点击的事件处理
+        Intent buttonIntent = new Intent(getApplicationContext(), MusicPlayerService.class);
+        /* 上一首按钮 */
+//        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_PREV_ID);
+        //这里加了广播，所及INTENT的必须用getBroadcast方法
+        PendingIntent intent_prev = PendingIntent.getBroadcast(this, 1, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, intent_prev);
+        /* 播放/暂停  按钮 */
+//        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_PALY_ID);
+        PendingIntent intent_paly = PendingIntent.getBroadcast(this, 2, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_play, intent_paly);
+        /* 下一首 按钮  */
+//        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_NEXT_ID);
+        PendingIntent intent_next = PendingIntent.getBroadcast(this, 3, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_next, intent_next);
+
+        mBuilder.setContent(mRemoteViews)
+                .setWhen(System.currentTimeMillis())// 通知产生的时间，会在通知信息里显示
+                .setTicker("正在播放")
+                .setPriority(Notification.PRIORITY_DEFAULT)// 设置该通知优先级
+                .setOngoing(true)
+                .setSmallIcon(R.drawable.ic_launcher);
+        Notification notify = mBuilder.build();
+        notify.flags = Notification.FLAG_ONGOING_EVENT;
+        mNotificationManager.notify(8, notify);
+    }
 }
