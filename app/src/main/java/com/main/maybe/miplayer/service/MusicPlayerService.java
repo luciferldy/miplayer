@@ -272,8 +272,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
      * 带按钮的通知栏
      */
     public void showButtonNotify(){
-        NotificationManager mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
+
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
         mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
         //API3.0 以上的时候显示按钮，否则消失
@@ -285,21 +284,29 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         }else{
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
         }
+        mRemoteViews.setImageViewResource(R.id.notification_previous, R.drawable.ic_music_previous);
+        mRemoteViews.setImageViewResource(R.id.notification_next, R.drawable.ic_music_next);
         //点击的事件处理
         Intent buttonIntent = new Intent(getApplicationContext(), MusicPlayerService.class);
+
         /* 上一首按钮 */
 //        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_PREV_ID);
         //这里加了广播，所及INTENT的必须用getBroadcast方法
         PendingIntent intent_prev = PendingIntent.getBroadcast(this, 1, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, intent_prev);
+
         /* 播放/暂停  按钮 */
 //        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_PALY_ID);
         PendingIntent intent_paly = PendingIntent.getBroadcast(this, 2, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_play, intent_paly);
+
         /* 下一首 按钮  */
 //        buttonIntent.putExtra(INTENT_BUTTONID_TAG, BUTTON_NEXT_ID);
         PendingIntent intent_next = PendingIntent.getBroadcast(this, 3, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_next, intent_next);
+
+        NotificationManager mNotificationManager = (NotificationManager) getApplicationContext().getSystemService(NOTIFICATION_SERVICE);
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext());
 
         mBuilder.setContent(mRemoteViews)
                 .setWhen(System.currentTimeMillis())// 通知产生的时间，会在通知信息里显示
