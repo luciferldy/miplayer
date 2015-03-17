@@ -2,6 +2,7 @@ package com.main.maybe.miplayer.service;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
+import com.main.maybe.miplayer.MainActivity;
 import com.main.maybe.miplayer.Queue;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
@@ -33,6 +35,10 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
+
+    public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
+    public static final String ACTION_NOTIFICATION_PREVIOUS = "action_notification_previous";
+    public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
 
     private int state;
 
@@ -267,13 +273,40 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         seekBarChanger.execute();
     }
 
-    /**
-     * 带按钮的通知栏
-     */
+    // custom notification with button
     public void showButtonNotify(){
 
         NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Playing")
+                .setAutoCancel(true);
+        Notification notification = builder.build();
+        notification.bigContentView = getExpandView();
 
+        mNotificationManager.notify(1, notification);
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        handleNotificationIntent(intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void handleNotificationIntent( Intent intent ){
+        if (intent != null && intent.getAction() != null){
+            if (intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_PLAY_PAUSE )){
+                changeState();
+            }
+            else if ( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_PREVIOUS )){
+                playPrevious();
+            }else if ( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_NEXT )){
+                playNext();
+            }
+        }
+    }
+
+    public RemoteViews getExpandView(){
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
         mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
 
@@ -286,15 +319,20 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
         }
 
-        mRemoteViews.setImageViewResource(R.id.notification_previous, R.drawable.ic_music_previous);
-        mRemoteViews.setImageViewResource(R.id.notification_next, R.drawable.ic_music_next);
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
 
-        Notification.Builder builder = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentTitle("Media Title")
-                .setContentText("Media Artist")
-                .setStyle(new Notification.BigPictureStyle());
-        
-        mNotificationManager.notify(1, builder.build());
+        intent.setAction(ACTION_NOTIFICATION_PLAY_PAUSE);
+        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_play, pendingIntent);
+
+        intent.setAction(ACTION_NOTIFICATION_PREVIOUS);
+        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pendingIntent);
+
+        intent.setAction(ACTION_NOTIFICATION_NEXT);
+        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_next, pendingIntent);
+
+        return mRemoteViews;
     }
 }

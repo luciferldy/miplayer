@@ -67,10 +67,6 @@ public class Music {
         return file.getAbsolutePath();
     }
 
-    public File getFile(){
-        return file;
-    }
-
     public String getName(){
         return name;
     }
@@ -83,25 +79,14 @@ public class Music {
         return album;
     }
 
-    public int getTimesPlayed(){
-        return timesPlayed;
-    }
-
     public File getAlbumCover(){
         return albumCover;
-    }
-
-    public String getDuration(){
-        return duration;
     }
 
     public int getTime(){
         return time;
     }
 
-    public String getPlayableFilePath(){
-        return file.getAbsolutePath();
-    }
 
     @Override
     public String toString() {
