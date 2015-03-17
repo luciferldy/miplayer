@@ -19,7 +19,6 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
-import com.main.maybe.miplayer.MainActivity;
 import com.main.maybe.miplayer.Queue;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
@@ -319,7 +318,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
         }
 
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), MusicPlayerService.class);
 
         intent.setAction(ACTION_NOTIFICATION_PLAY_PAUSE);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
