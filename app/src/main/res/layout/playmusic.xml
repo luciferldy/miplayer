@@ -75,8 +75,9 @@
             android:layout_below="@id/play_currenttime"
             android:padding="0dp"
             android:layout_marginTop="5dp"
-            style="@style/mProgress_horizontal"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:progress="0"
+            android:thumb="@null"
             android:indeterminate="false" />
     </RelativeLayout>
     <RelativeLayout
