@@ -5,8 +5,8 @@
     android:gravity="center_vertical">
     <ImageView
         android:id="@+id/notification_albumcover"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="0dp"
         android:layout_alignParentLeft="true"
         android:scaleType="fitCenter"

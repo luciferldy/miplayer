@@ -288,12 +288,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
         mRemoteViews.setImageViewResource(R.id.notification_previous, R.drawable.ic_music_previous);
         mRemoteViews.setImageViewResource(R.id.notification_next, R.drawable.ic_music_next);
-        int icon = R.drawable.ic_launcher;
-        Notification notification = new Notification();
-        notification.contentView = mRemoteViews;
-        notification.icon = icon;
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+        Notification.Builder builder = new Notification.Builder(this)
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentTitle("Media Title")
+                .setContentText("Media Artist")
+                .setStyle(new Notification.BigPictureStyle());
         
-        mNotificationManager.notify(0, notification);
+        mNotificationManager.notify(1, builder.build());
     }
 }

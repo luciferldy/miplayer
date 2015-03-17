@@ -52,6 +52,8 @@ public class Queue {
     }
 
     public Music next(){
+        if (queue.size() == 0)
+            return null;
         current = ++current % queue.size();
         // 随机？？
         if (queue.size() >= 1 && random)
