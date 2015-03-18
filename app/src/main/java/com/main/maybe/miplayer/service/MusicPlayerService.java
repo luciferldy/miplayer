@@ -207,13 +207,12 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public synchronized void playFetched(String path){
         state = PLAYING;
         playSetting(path);
-        play();
         showButtonNotify();
-        setSeekBarTracker();
     }
 
     public void playInit(){
-        playSetting(mNowPlaying.getCurrentPlaying().getMusicLocation());
+        playFetched(mNowPlaying.getCurrentPlaying().getMusicLocation());
+        changeState();
     }
 
     public void playSetting(String path){
@@ -242,6 +241,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.getCurrentPlaying().getName());
                     mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.getCurrentPlaying().getAlbum());
                     mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.getCurrentPlaying().getArtist());
+
+                    play();
+                    setSeekBarTracker();
                 }
             });
             mMediaPlayer.prepare();
