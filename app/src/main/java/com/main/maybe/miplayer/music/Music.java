@@ -1,5 +1,6 @@
 package com.main.maybe.miplayer.music;
 
+import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
 
@@ -16,7 +17,7 @@ public class Music {
     private String album = UNKNOWN;
     private int timesPlayed = 0;
     private String duration;
-    private File albumCover;
+    private Bitmap albumCover;
     private int time;
     private String LOG_TAG = Music.class.getSimpleName();
 
@@ -53,10 +54,18 @@ public class Music {
                 this.duration = duration;
                 this.time = Integer.parseInt(this.duration)/1000;
             }
+            // get the album cover
+            // memory exploring……
+//            byte[] data = mmr.getEmbeddedPicture();
+//            if(data != null){
+//                albumCover = BitmapFactory.decodeByteArray(data, 0, data.length);
+//            }
 
         }catch(IllegalArgumentException e){
             e.printStackTrace();
         }catch (IllegalStateException e){
+            e.printStackTrace();
+        }catch (OutOfMemoryError e){
             e.printStackTrace();
         }
 
@@ -79,7 +88,7 @@ public class Music {
         return album;
     }
 
-    public File getAlbumCover(){
+    public Bitmap getAlbumCover(){
         return albumCover;
     }
 

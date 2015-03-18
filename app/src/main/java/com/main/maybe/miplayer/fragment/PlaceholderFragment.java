@@ -38,8 +38,6 @@ import java.util.List;
  */
 public class PlaceholderFragment extends Fragment {
 
-    List<Music> list;
-    List<Music> nowPlaying;
     List<Music> library;
     MusicViewAdapter mMusicViewAdapter;
 
@@ -229,7 +227,7 @@ public class PlaceholderFragment extends Fragment {
 
     private synchronized void initQueue(){
         mService.addMusicToQueue(library);
-        mService.playNext();
+        mService.playInit();
 
         // set button clickable
         playPausedButton.setClickable(true);

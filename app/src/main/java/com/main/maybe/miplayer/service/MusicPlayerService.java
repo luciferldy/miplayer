@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
@@ -35,11 +36,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
 
+    private final static int PLAY_MUSIC_NOTIFICATION_ID = 1;
+
     public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
     public static final String ACTION_NOTIFICATION_PREVIOUS = "action_notification_previous";
     public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
 
-    private int state;
+    private int state = PAUSED;
 
     private MusicPlayerServiceBinder mMusicPlayerServiceBinder;
     private Queue mNowPlaying;
@@ -52,6 +55,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private AsyncTask<Void, Void, Void> seekBarChanger;
 
     private String LOG_TAG = MusicPlayerService.class.getSimpleName();
+
+    private Notification mNotification;
+    private NotificationManager mNotificationManager;
 
     private Handler handler = new Handler(){
         @Override
@@ -108,7 +114,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     @Override
     public void play() {
         state = PLAYING;
-        showButtonNotify();
         mMediaPlayer.start();
         if (mMusicPlayerServiceBinder != null)
             mMusicPlayerServiceBinder.setImagePaused();
@@ -131,6 +136,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 play();
                 break;
         }
+        showButtonNotify();
         return state;
     }
 
@@ -200,11 +206,21 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     // play music selected
     public synchronized void playFetched(String path){
         state = PLAYING;
+        playSetting(path);
+        play();
+        showButtonNotify();
+        setSeekBarTracker();
+    }
+
+    public void playInit(){
+        playSetting(mNowPlaying.getCurrentPlaying().getMusicLocation());
+    }
+
+    public void playSetting(String path){
         mMediaPlayer.stop();
         mMediaPlayer.reset();
         try{
             mMediaPlayer.setDataSource(path);
-
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -226,9 +242,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.getCurrentPlaying().getName());
                     mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.getCurrentPlaying().getAlbum());
                     mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.getCurrentPlaying().getArtist());
-
-                    play();
-                    setSeekBarTracker();
                 }
             });
             mMediaPlayer.prepare();
@@ -274,16 +287,15 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     // custom notification with button
     public void showButtonNotify(){
-
-        NotificationManager mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Playing")
                 .setAutoCancel(true);
-        Notification notification = builder.build();
-        notification.bigContentView = getExpandView();
+        mNotification = builder.build();
+        mNotification.bigContentView = getExpandView();
 
-        mNotificationManager.notify(1, notification);
+        mNotificationManager.notify(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
     }
 
     @Override
@@ -307,7 +319,16 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public RemoteViews getExpandView(){
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
-        mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
+
+        Bitmap albumCover = mNowPlaying.getCurrentPlaying().getAlbumCover();
+        if (albumCover != null){
+            // two ways to get the album cover
+//            Uri albumCoverUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), albumCover, null, null));
+//            mRemoteViews.setImageViewUri(R.id.notification_albumcover, albumCoverUri);
+            mRemoteViews.setImageViewBitmap(R.id.notification_albumcover, albumCover);
+        }
+        else
+            mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
 
         mRemoteViews.setTextViewText(R.id.notification_artist, mNowPlaying.getCurrentPlaying().getArtist());
         mRemoteViews.setTextViewText(R.id.notification_songtitle, mNowPlaying.getCurrentPlaying().getName());
