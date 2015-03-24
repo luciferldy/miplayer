@@ -11,7 +11,7 @@
         android:layout_alignParentLeft="true"
         android:scaleType="fitCenter"
         android:padding="0dp"
-        android:src="@drawable/ic_launcher"/>
+        android:src="@drawable/album_cover"/>
     <LinearLayout
         android:layout_toRightOf="@id/notification_albumcover"
         android:layout_width="fill_parent"

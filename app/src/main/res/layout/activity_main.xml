@@ -1,6 +1,68 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    tools:ignore="MergeRootFrame" />
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <RelativeLayout
+        android:id="@+id/bottom_music_show"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/bottom_music_albumcover"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/album_cover"
+            android:layout_marginRight="10dp"/>
+        <ImageButton
+            android:id="@+id/bottom_music_next"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#00000000"
+            android:src="@drawable/ic_music_next"
+            android:scaleType="fitCenter"/>
+        <ImageButton
+            android:id="@+id/bottom_music_play"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/bottom_music_next"
+            android:background="#00000000"
+            android:src="@drawable/song_play"
+            android:scaleType="fitCenter"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/bottom_music_albumcover"
+            android:layout_toLeftOf="@id/bottom_music_play"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/bottom_music_title"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:textSize="18sp"
+                android:text="21 Gun"/>
+            <TextView
+                android:id="@+id/bottom_music_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="15dp"
+                android:text="The Green Day"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+    <com.astuetz.PagerSlidingTabStrip
+        android:id="@+id/tabs"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:fillViewport="false">
+    </com.astuetz.PagerSlidingTabStrip>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_pager"
+        android:layout_below="@id/tabs"
+        android:layout_above="@id/bottom_music_show"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v4.view.ViewPager>
+</RelativeLayout>

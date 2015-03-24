@@ -24,7 +24,7 @@
         <TextView
             android:id="@+id/play_song_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="23dp"
             android:layout_alignTop="@id/play_back"
             android:layout_toRightOf="@id/play_back"
             android:textStyle="bold"
@@ -33,7 +33,7 @@
         <TextView
             android:id="@+id/play_album"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="17dp"
             android:layout_toRightOf="@id/play_back"
             android:layout_below="@id/play_song_name"
             android:layout_marginRight="5dp"
@@ -115,14 +115,10 @@
             android:src="@drawable/ic_music_next"
             android:background="#00000000"/>
     </RelativeLayout>
-    <ListView
-        android:id="@+id/play_list"
+    <TextView
+        android:id="@+id/play_lyric"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="fill_parent"
         android:layout_below="@id/play_messagetitle"
-        android:layout_above="@id/play_messageoperation"
-        android:background="#00000000"
-        android:divider="#00000000"
-        android:dividerHeight="3dp">
-    </ListView>
+        android:layout_above="@id/play_messageoperation"/>
 </RelativeLayout>
