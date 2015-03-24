@@ -1,14 +1,23 @@
 package com.main.maybe.miplayer;
 
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
+import com.astuetz.PagerSlidingTabStrip;
+import com.main.maybe.miplayer.adapter.MainViewPagerAdapter;
+
 
 public class MainActivity extends ActionBarActivity {
-    
+
+    private PagerSlidingTabStrip mainTabs;
+    private ViewPager mainPagers;
+    private MainViewPagerAdapter mainPagerAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,7 +25,21 @@ public class MainActivity extends ActionBarActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // maybe mean nothing
         setContentView(R.layout.activity_main);
+        initPaper();
+    }
 
+    public void initPaper(){
+        mainTabs = (PagerSlidingTabStrip)findViewById(R.id.main_tabs);
+        mainTabs.setShouldExpand(true);
+        mainPagers = (ViewPager)findViewById(R.id.main_pager);
+        mainPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
+
+        mainPagers.setAdapter(mainPagerAdapter);
+        int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
+        mainPagers.setPageMargin(pageMargin);
+        mainTabs.setViewPager(mainPagers);
+
+        mainTabs.setIndicatorColor(getResources().getColor(R.color.background_floating_material_light));
     }
 
 
