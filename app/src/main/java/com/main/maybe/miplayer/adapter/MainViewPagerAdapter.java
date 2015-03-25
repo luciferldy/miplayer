@@ -4,6 +4,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.main.maybe.miplayer.fragment.MainViewPagerFragment;
+
 /**
  * Created by Maybe霏 on 2015/3/24.
  */
@@ -22,7 +24,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter{
 
     @Override
     public Fragment getItem(int position) {
-        return null;
+        return MainViewPagerFragment.newInstance(position);
     }
 
     @Override

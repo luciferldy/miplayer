@@ -71,4 +71,6 @@ public class MainViewPagerFragment extends Fragment {
 
         return linearLayout;
     }
+
+
 }
