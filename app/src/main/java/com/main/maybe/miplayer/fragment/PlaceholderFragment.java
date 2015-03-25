@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -16,9 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -26,11 +23,8 @@ import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.SeekBarTextCallBack;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.music.Music;
-import com.main.maybe.miplayer.music.MusicScanner;
-import com.main.maybe.miplayer.music.MusicViewAdapter;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,14 +32,9 @@ import java.util.List;
  */
 public class PlaceholderFragment extends Fragment {
 
-    List<Music> library;
-    MusicViewAdapter mMusicViewAdapter;
-
-
     private SeekBar mSeekBar;
     private TextView mTotalTime;
     private TextView mCurrentTime;
-    private ListView listOfFiles;
     private ImageButton playPausedButton;
     private ImageButton playPreviousButton;
     private ImageButton playNextButton;
@@ -59,7 +48,9 @@ public class PlaceholderFragment extends Fragment {
     SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener;
     boolean mBound = false;
 
-    List<String> filePaths = null;
+    private List<String> filePaths = null;
+
+    private List<Music> library;
 
     int state;
 
@@ -76,19 +67,6 @@ public class PlaceholderFragment extends Fragment {
         playTitle = (TextView)rootView.findViewById(R.id.play_song_name);
         playAlbum = (TextView)rootView.findViewById(R.id.play_album);
         playArtist = (TextView)rootView.findViewById(R.id.play_singer);
-
-        library = new ArrayList<>();
-
-        final MusicScanner musicScanner = new MusicScanner();
-        listOfFiles = (ListView)rootView.findViewById(R.id.play_list);
-        mMusicViewAdapter = new MusicViewAdapter(getActivity(), R.layout.songlistitem, library);
-        listOfFiles.setAdapter(mMusicViewAdapter);
-        listOfFiles.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mService.play(position);
-            }
-        });
 
         playPausedButton = (ImageButton)rootView.findViewById(R.id.play_paused);
         playPausedButton.setClickable(false);
@@ -122,8 +100,6 @@ public class PlaceholderFragment extends Fragment {
         defineServiceConnection();// we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
                 , Context.BIND_AUTO_CREATE);
-
-        createLibrary(musicScanner);
 
         return rootView;
     }
@@ -228,37 +204,9 @@ public class PlaceholderFragment extends Fragment {
     private synchronized void initQueue(){
         mService.addMusicToQueue(library);
         mService.playInit();
-
-        // set button clickable
-        playPausedButton.setClickable(true);
-        playPreviousButton.setClickable(true);
-        playNextButton.setClickable(true);
     }
 
-    private void createLibrary(final MusicScanner musicScanner){
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                musicScanner.scanMusic(getActivity());
-                return null;
-            }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                filePaths = musicScanner.getScannedMusic();
-                Log.d(LOG_TAG, "Done getting the files from the music scanner");
-
-                for (String filePath : filePaths){
-                    library.add(new Music(filePath));
-                }
-
-                mMusicViewAdapter.notifyDataSetChanged();
-                Log.d(LOG_TAG, "notifyDataSetChanged");
-                if (mBound)
-                    initQueue();
-            }
-        }.execute();
-    }
 
     @Override
     public void onDestroy() {

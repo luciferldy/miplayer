@@ -1,4 +1,4 @@
-package com.main.maybe.miplayer.music;
+package com.main.maybe.miplayer.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.R;
+import com.main.maybe.miplayer.music.Music;
 
 import java.util.List;
 
