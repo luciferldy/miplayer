@@ -50,7 +50,6 @@ public class MainViewPagerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         position = getArguments().getInt(ARG_POSITION);
     }
 
@@ -65,7 +64,17 @@ public class MainViewPagerFragment extends Fragment {
         final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
         params.setMargins(margin, margin, margin ,margin);
 
-        fl.addView(initSongList());
+        // 在这里选择选项
+        switch (position){
+            case 0:
+                // 初始化发现界面
+                break;
+            case 1:
+                // 初始化我的界面
+                fl.addView(initSongList());
+                break;
+        }
+
 
         return fl;
     }
