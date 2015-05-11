@@ -18,7 +18,6 @@
         android:layout_marginBottom="8dp"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal">
-
         <View
             android:id="@+id/dot_0"
             android:layout_width="@dimen/dot_width"
@@ -33,7 +32,7 @@
             android:layout_marginLeft="@dimen/dot_margin_left"
             android:layout_marginRight="@dimen/dot_margin_right"
             android:background="@drawable/dot_focused"/>
-        <view
+        <View
             android:id="@+id/dot_2"
             android:layout_width="@dimen/dot_width"
             android:layout_height="@dimen/dot_length"
@@ -47,7 +46,7 @@
             android:layout_marginLeft="@dimen/dot_margin_left"
             android:layout_marginRight="@dimen/dot_margin_right"
             android:background="@drawable/dot_focused"/>
-        <view
+        <View
             android:id="@+id/dot_4"
             android:layout_width="@dimen/dot_width"
             android:layout_height="@dimen/dot_length"

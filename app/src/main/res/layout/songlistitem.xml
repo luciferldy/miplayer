@@ -10,7 +10,7 @@
         android:id="@+id/song_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="15dp"
+        android:textSize="18dp"
         android:layout_alignParentLeft="true"
         android:textStyle="bold"
         android:text="21 guns"/>
