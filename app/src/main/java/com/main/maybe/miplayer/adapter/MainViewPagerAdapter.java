@@ -11,7 +11,7 @@ import com.main.maybe.miplayer.fragment.MainViewPagerFragment;
  */
 public class MainViewPagerAdapter extends FragmentPagerAdapter{
 
-    private final String[] TITLES = {"发现", "我的"};
+    private final String[] TITLES = {"歌曲", "歌手", "专辑", "列表"};
 
     public MainViewPagerAdapter(FragmentManager fm){
         super(fm);

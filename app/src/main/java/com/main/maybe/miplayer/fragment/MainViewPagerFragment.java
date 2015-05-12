@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
@@ -65,20 +66,52 @@ public class MainViewPagerFragment extends Fragment {
         params.setMargins(margin, margin, margin ,margin);
 
         // 在这里选择选项
-        switch (position){
+        switch (position) {
             case 0:
-                // 初始化发现界面
+                // 歌曲界面
+                fl.addView(null);
                 break;
             case 1:
-                // 初始化我的界面
-                fl.addView(initSongList());
+                // 艺术家界面
+                fl.addView(null);
+                break;
+            case 2:
+                // 专辑
+                fl.addView(null);
+                break;
+            case 3:
+                // 列表
+                fl.addView(null);
                 break;
         }
-
-
         return fl;
     }
 
+    public LinearLayout initSongs(){
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        ViewPager music_recommend = (ViewPager)linearLayout.getChildAt(0);
+
+        return linearLayout;
+    }
+
+    public LinearLayout initArtists(){
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        return linearLayout;
+    }
+
+    public LinearLayout initAlbum(){
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        return linearLayout;
+    }
+
+    public LinearLayout initList(){
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        return linearLayout;
+    }
     public LinearLayout initSongList(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);

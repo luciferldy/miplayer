@@ -37,9 +37,11 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:paddingBottom="6dp"
+            android:layout_marginBottom="6dp"
             android:orientation="horizontal"
-            android:visibility="visible">
+            android:visibility="visible"
+            android:gravity="center_vertical"
+            android:background="@color/background_floating_material_dark">
             <ImageView
                 android:id="@+id/notification_previous"
                 android:layout_width="0dp"
