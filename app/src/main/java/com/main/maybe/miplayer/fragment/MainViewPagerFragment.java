@@ -4,18 +4,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.adapter.MusicViewAdapter;
@@ -23,7 +19,6 @@ import com.main.maybe.miplayer.music.Music;
 import com.main.maybe.miplayer.music.MusicScanner;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,19 +64,19 @@ public class MainViewPagerFragment extends Fragment {
         switch (position) {
             case 0:
                 // 歌曲界面
-                fl.addView(null);
+                fl.addView(initSongs());
                 break;
             case 1:
                 // 艺术家界面
-                fl.addView(null);
+                fl.addView(initArtists());
                 break;
             case 2:
                 // 专辑
-                fl.addView(null);
+                fl.addView(initAlbum());
                 break;
             case 3:
                 // 列表
-                fl.addView(null);
+                fl.addView(initList());
                 break;
         }
         return fl;
@@ -89,56 +84,57 @@ public class MainViewPagerFragment extends Fragment {
 
     public LinearLayout initSongs(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
-        ViewPager music_recommend = (ViewPager)linearLayout.getChildAt(0);
-
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
+//        ListView songlist = (ListView)linearLayout.getChildAt(0);
+//        SongListAdapter adapter = new SongListAdapter();
+//        songlist.setAdapter(adapter);
         return linearLayout;
     }
 
     public LinearLayout initArtists(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         return linearLayout;
     }
 
     public LinearLayout initAlbum(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         return linearLayout;
     }
 
     public LinearLayout initList(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.findmusic, null);
+        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         return linearLayout;
     }
     public LinearLayout initSongList(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
 
-        SwipeRefreshLayout songListRefresh = (SwipeRefreshLayout)linearLayout.getChildAt(0);
-        songListRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-
-            }
-        });
-        songListRefresh.setColorSchemeColors(android.R.color.holo_red_light, android.R.color.holo_blue_light,
-                android.R.color.holo_green_light, android.R.color.holo_orange_light);
-
-        ListView songList = (ListView)songListRefresh.getChildAt(0);
-        library = new ArrayList<>();
-
-        final MusicScanner musicScanner = new MusicScanner();
-        mMusicViewAdapter = new MusicViewAdapter(getActivity(), R.layout.songlistitem, library);
-
-        songList.setAdapter(mMusicViewAdapter);
-        songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mService.play(position);
-            }
-        });
+//        SwipeRefreshLayout songListRefresh = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+//        songListRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//
+//            }
+//        });
+//        songListRefresh.setColorSchemeColors(android.R.color.holo_red_light, android.R.color.holo_blue_light,
+//                android.R.color.holo_green_light, android.R.color.holo_orange_light);
+//
+//        ListView songList = (ListView)songListRefresh.getChildAt(0);
+//        library = new ArrayList<>();
+//
+//        final MusicScanner musicScanner = new MusicScanner();
+//        mMusicViewAdapter = new MusicViewAdapter(getActivity(), R.layout.songlistitem, library);
+//
+//        songList.setAdapter(mMusicViewAdapter);
+//        songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                mService.play(position);
+//            }
+//        });
         return linearLayout;
     }
 
