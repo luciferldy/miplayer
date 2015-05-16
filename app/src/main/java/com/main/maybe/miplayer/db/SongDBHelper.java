@@ -8,11 +8,14 @@ import android.util.Log;
 /**
  * Created by Maybe霏 on 2015/3/25.
  */
+// 数据库辅助类
 public class SongDBHelper extends SQLiteOpenHelper {
 
     private final static int VERSION = 1;
-    public final static String DATABASE_NAME = "songlib.db";
-    public final static String TABLE_SONGS = "songslist";
+    public final static String DATABASE_NAME = "music.db";
+    public final static String TABLE_SONG = "song";
+    public final static String TABLE_ARTIST = "artist";
+    public final static String TABLE_ALBUM = "album";
 
     public final static String DATABASE_PATH = "/data/data/com.main.maybe.miplayer/databases/";
     private final String LOG_TAG = SongDBHelper.class.getSimpleName();
@@ -22,11 +25,31 @@ public class SongDBHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    // first use
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table if not exists songslist("
-        + "listId varchar, "
-        + "path varchar)");
-        Log.v(LOG_TAG, "songslist first onCreate");
+        // create songs
+        db.execSQL("create table if not exists "+TABLE_SONG+"("
+        + "songId varchar, "
+        + "songName varchar, "
+        + "artistName varchar, "
+        + "albumName varchar, "
+        + "path)");
+        Log.v(LOG_TAG, "table song onCreate");
+
+        // create artist
+        db.execSQL("create table if not exist "+TABLE_ARTIST+"("
+        + "artistId varchar, "
+        + "artistName varchar, "
+        + "songNumber)");
+        Log.v(LOG_TAG, "table artist onCreate");
+
+        // create album
+        db.execSQL("create table if not exist "+TABLE_ALBUM+"("
+        + "albumId varchar, "
+        + "albumName varchar, "
+        + "artistName varchar, "
+        + "songNumber)");
+        Log.v(LOG_TAG, "table album onCreate");
     }
 
     @Override
