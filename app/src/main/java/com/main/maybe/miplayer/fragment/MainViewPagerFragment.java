@@ -16,8 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.main.maybe.miplayer.R;
+import com.main.maybe.miplayer.adapter.AlbumListAdapter;
+import com.main.maybe.miplayer.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.adapter.MusicViewAdapter;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
+import com.main.maybe.miplayer.db.HandleDB;
 import com.main.maybe.miplayer.music.Music;
 import com.main.maybe.miplayer.music.MusicScanner;
 import com.main.maybe.miplayer.service.MusicPlayerService;
@@ -85,12 +88,13 @@ public class MainViewPagerFragment extends Fragment {
         return fl;
     }
 
+    // init songs
     public LinearLayout initSongs(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         ListView songList = (ListView)swipeRefreshLayout.getChildAt(0);
-        SongListAdapter adapter = new SongListAdapter();
+        SongListAdapter adapter = new SongListAdapter((new HandleDB(getActivity())).getSongsFromDB(), inflater);
         songList.setAdapter(adapter);
         return linearLayout;
     }
@@ -98,12 +102,20 @@ public class MainViewPagerFragment extends Fragment {
     public LinearLayout initArtists(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        ListView artistList = (ListView)swipeRefreshLayout.getChildAt(0);
+        ArtistListAdapter adapter = new ArtistListAdapter((new HandleDB(getActivity())).getArtistsFromDB(), inflater);
+        artistList.setAdapter(adapter);
         return linearLayout;
     }
 
     public LinearLayout initAlbum(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        ListView albumList = (ListView)swipeRefreshLayout.getChildAt(0);
+        AlbumListAdapter adapter = new AlbumListAdapter((new HandleDB(getActivity())).getAlbumFromDB(), inflater);
+        albumList.setAdapter(adapter);
         return linearLayout;
     }
 
