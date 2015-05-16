@@ -9,8 +9,6 @@ import android.widget.BaseAdapter;
  */
 public class SongListAdapter extends BaseAdapter {
 
-
-
     @Override
     public Object getItem(int position) {
         return null;
