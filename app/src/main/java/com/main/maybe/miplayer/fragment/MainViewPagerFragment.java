@@ -1,11 +1,9 @@
 package com.main.maybe.miplayer.fragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,14 +14,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.main.maybe.miplayer.R;
-import com.main.maybe.miplayer.adapter.AlbumListAdapter;
-import com.main.maybe.miplayer.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.adapter.MusicViewAdapter;
-import com.main.maybe.miplayer.adapter.SongListAdapter;
-import com.main.maybe.miplayer.db.HandleDB;
 import com.main.maybe.miplayer.music.Music;
-import com.main.maybe.miplayer.music.MusicScanner;
 import com.main.maybe.miplayer.service.MusicPlayerService;
+import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.util.List;
 
@@ -81,7 +75,7 @@ public class MainViewPagerFragment extends Fragment {
                 fl.addView(initAlbum());
                 break;
             case 3:
-                // mylist
+                // list
                 fl.addView(initList());
                 break;
         }
@@ -93,9 +87,10 @@ public class MainViewPagerFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
-        ListView songList = (ListView)swipeRefreshLayout.getChildAt(0);
-        SongListAdapter adapter = new SongListAdapter((new HandleDB(getActivity())).getSongsFromDB(), inflater);
-        songList.setAdapter(adapter);
+        ListView songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
+
+        // start async task
+        (new LoadingListTask(0, getActivity(), songList, inflater)).execute();
         return linearLayout;
     }
 
@@ -103,9 +98,9 @@ public class MainViewPagerFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
-        ListView artistList = (ListView)swipeRefreshLayout.getChildAt(0);
-        ArtistListAdapter adapter = new ArtistListAdapter((new HandleDB(getActivity())).getArtistsFromDB(), inflater);
-        artistList.setAdapter(adapter);
+        ListView artistList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
+
+        (new LoadingListTask(1, getActivity(), artistList, inflater)).execute();
         return linearLayout;
     }
 
@@ -113,9 +108,9 @@ public class MainViewPagerFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
-        ListView albumList = (ListView)swipeRefreshLayout.getChildAt(0);
-        AlbumListAdapter adapter = new AlbumListAdapter((new HandleDB(getActivity())).getAlbumFromDB(), inflater);
-        albumList.setAdapter(adapter);
+        ListView albumList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
+
+        (new LoadingListTask(2, getActivity(), albumList, inflater)).execute();
         return linearLayout;
     }
 
@@ -124,9 +119,9 @@ public class MainViewPagerFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         return linearLayout;
     }
-    public LinearLayout initSongList(){
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
+//    public LinearLayout initSongList(){
+//        LayoutInflater inflater = LayoutInflater.from(getActivity());
+//        LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
 
 //        SwipeRefreshLayout songListRefresh = (SwipeRefreshLayout)linearLayout.getChildAt(0);
 //        songListRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -151,36 +146,36 @@ public class MainViewPagerFragment extends Fragment {
 //                mService.play(position);
 //            }
 //        });
-        return linearLayout;
-    }
-
-    private void createLibrary(final MusicScanner musicScanner){
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... params) {
-                musicScanner.scanMusic(getActivity());
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                filePaths = musicScanner.getScannedMusic();
-                Log.d(LOG_TAG, "Done getting the files from the music scanner");
-
-                for (String filePath : filePaths){
-                    library.add(new Music(filePath));
-                }
-
-                mMusicViewAdapter.notifyDataSetChanged();
-                Log.d(LOG_TAG, "notifyDataSetChanged");
-                if (mBound)
-                    initQueue();
-            }
-        }.execute();
-    }
-
-    private synchronized void initQueue(){
-        mService.addMusicToQueue(library);
-        mService.playInit();
-    }
+//        return linearLayout;
+//    }
+//
+//    private void createLibrary(final MusicScanner musicScanner){
+//        new AsyncTask<Void, Void, Void>(){
+//            @Override
+//            protected Void doInBackground(Void... params) {
+//                musicScanner.scanMusic(getActivity());
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Void aVoid) {
+//                filePaths = musicScanner.getScannedMusic();
+//                Log.d(LOG_TAG, "Done getting the files from the music scanner");
+//
+//                for (String filePath : filePaths){
+//                    library.add(new Music(filePath));
+//                }
+//
+//                mMusicViewAdapter.notifyDataSetChanged();
+//                Log.d(LOG_TAG, "notifyDataSetChanged");
+//                if (mBound)
+//                    initQueue();
+//            }
+//        }.execute();
+//    }
+//
+//    private synchronized void initQueue(){
+//        mService.addMusicToQueue(library);
+//        mService.playInit();
+//    }
 }

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.R;
+import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,8 +41,8 @@ public class ArtistListAdapter extends BaseAdapter {
             item = (ArtistItem)convertView.getTag();
         }
 
-        item.artistName.setText(artists.get(position).get("artistName"));
-        item.songNumber.setText(artists.get(position).get("songNumber"));
+        item.artistName.setText(artists.get(position).get(LoadingListTask.artistName));
+        item.songNumber.setText(artists.get(position).get(LoadingListTask.songNumber));
 
         return convertView;
     }

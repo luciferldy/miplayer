@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.R;
+import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,9 +47,9 @@ public class SongListAdapter extends BaseAdapter {
             item = (SongItem)convertView.getTag();
         }
 
-        item.songName.setText(songs.get(position).get("songName"));
-        item.artistName.setText(songs.get(position).get("artistName"));
-        item.songDuration.setText(songs.get(position).get("songDuration"));
+        item.songName.setText(songs.get(position).get(LoadingListTask.songName));
+        item.artistName.setText(songs.get(position).get(LoadingListTask.artistName));
+        item.songDuration.setText(songs.get(position).get(LoadingListTask.duration));
 
         return convertView;
     }
@@ -65,7 +66,6 @@ public class SongListAdapter extends BaseAdapter {
 
     // custom view group
     public class SongItem{
-
         TextView songName;
         TextView songDuration;
         TextView artistName;
