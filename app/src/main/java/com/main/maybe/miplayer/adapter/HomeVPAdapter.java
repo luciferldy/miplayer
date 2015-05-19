@@ -4,16 +4,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.main.maybe.miplayer.fragment.MainViewPagerFragment;
+import com.main.maybe.miplayer.fragment.HomeFragment;
 
 /**
  * Created by Maybe霏 on 2015/3/24.
  */
-public class MainViewPagerAdapter extends FragmentPagerAdapter{
+public class HomeVPAdapter extends FragmentPagerAdapter{
 
     private final String[] TITLES = {"歌曲", "歌手", "专辑", "列表"};
 
-    public MainViewPagerAdapter(FragmentManager fm){
+    public HomeVPAdapter(FragmentManager fm){
         super(fm);
     }
 
@@ -24,7 +24,7 @@ public class MainViewPagerAdapter extends FragmentPagerAdapter{
 
     @Override
     public Fragment getItem(int position) {
-        return MainViewPagerFragment.newInstance(position);
+        return HomeFragment.newInstance(position);
     }
 
     @Override

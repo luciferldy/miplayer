@@ -20,12 +20,13 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
-import com.main.maybe.miplayer.Queue;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
-import com.main.maybe.miplayer.music.Music;
+import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,9 +44,10 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
 
     private int state = PAUSED;
+    private int current_position = 0;
 
     private MusicPlayerServiceBinder mMusicPlayerServiceBinder;
-    private Queue mNowPlaying;
+    private ArrayList<HashMap<String, String>> mNowPlaying;
     private MediaPlayer mMediaPlayer;
     private OnCompletionListener mCompletionListener;
 
@@ -92,18 +94,21 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     }
 
     @Override
-    public void addMusicToQueue(Music music) {
-        mNowPlaying.addMusicToQueue(music);
+    public void addMusicToQueue(HashMap<String, String> music) {
+        mNowPlaying.add(music);
     }
 
     @Override
-    public void addMusicToQueue(List<Music> music) {
-        mNowPlaying.addMusicToQueue(music);
+    public void addMusicToQueue(List<HashMap<String, String>> music) {
+        for (int i = 0 ; i < music.size() ; i++){
+            mNowPlaying.add(music.get(i));
+        }
     }
 
     @Override
-    public void removeMusicFromQueue(Music music) {
-        mNowPlaying.removeMusicToQueue(music);
+    public void removeMusicFromQueue(HashMap<String, String> music) {
+        // it can remove object
+        mNowPlaying.remove(music);
     }
 
     @Override
@@ -146,7 +151,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         state = PLAYING;
 
         // the now playing queue
-        mNowPlaying = new Queue();
+        mNowPlaying = new ArrayList<>();
         // the media player
         mMediaPlayer = new MediaPlayer();
 
@@ -188,19 +193,28 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public void play(int position) {
-        playFetched(mNowPlaying.playGet(position).getMusicLocation());
+        playFetched(mNowPlaying.get(position).get(LoadingListTask.path));
+        this.current_position = position;
     }
 
     public synchronized void playNext(){
         if (mMusicPlayerServiceBinder != null)
             mMusicPlayerServiceBinder.setImagePlay();
-        playFetched(mNowPlaying.next().getMusicLocation());
+        if ((current_position+1) == mNowPlaying.size())
+            current_position = 0;
+        else
+            current_position++;
+        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
     }
 
     public synchronized void playPrevious(){
         if (mMusicPlayerServiceBinder != null)
             mMusicPlayerServiceBinder.setImagePlay();
-        playFetched(mNowPlaying.previous().getMusicLocation());
+        if ((current_position-1) == 0)
+            current_position = mNowPlaying.size()-1;
+        else
+            current_position--;
+        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
     }
 
     // play music selected
@@ -211,7 +225,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     }
 
     public void playInit(){
-        playFetched(mNowPlaying.getCurrentPlaying().getMusicLocation());
+        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
         changeState();
     }
 
@@ -223,7 +237,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    int totalTime = mNowPlaying.getCurrentPlaying().getTime();
+                    int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration));
                     mSeekBar.setMax(totalTime*1000);
 
                     int minutes = totalTime/60, seconds = totalTime%60;
@@ -238,9 +252,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     }
 
                     // set music information
-                    mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.getCurrentPlaying().getName());
-                    mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.getCurrentPlaying().getAlbum());
-                    mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.getCurrentPlaying().getArtist());
+                    mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.get(current_position).get(LoadingListTask.songName));
+                    mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.get(current_position).get(LoadingListTask.albumName));
+                    mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
 
                     play();
                     setSeekBarTracker();
@@ -332,8 +346,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         else
             mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
 
-        mRemoteViews.setTextViewText(R.id.notification_artist, mNowPlaying.getCurrentPlaying().getArtist());
-        mRemoteViews.setTextViewText(R.id.notification_songtitle, mNowPlaying.getCurrentPlaying().getName());
+        mRemoteViews.setTextViewText(R.id.notification_artist, mNowPlaying.get(current_position).get(LoadingListTask.artistName));
+        mRemoteViews.setTextViewText(R.id.notification_songtitle, mNowPlaying.get(current_position).get(LoadingListTask.songName));
 
         if(state == PLAYING){
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_pause);

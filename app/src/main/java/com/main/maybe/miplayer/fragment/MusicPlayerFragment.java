@@ -22,15 +22,16 @@ import android.widget.TextView;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.SeekBarTextCallBack;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
-import com.main.maybe.miplayer.music.Music;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlaceholderFragment extends Fragment {
+public class MusicPlayerFragment extends Fragment {
 
     private SeekBar mSeekBar;
     private TextView mTotalTime;
@@ -48,15 +49,13 @@ public class PlaceholderFragment extends Fragment {
     SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener;
     boolean mBound = false;
 
-    private List<String> filePaths = null;
-
-    private List<Music> library;
-
     int state;
+    private List<HashMap<String, String>> songs = new ArrayList<>();
 
-    private final String LOG_TAG = PlaceholderFragment.class.getSimpleName();
+    private final String LOG_TAG = MusicPlayerFragment.class.getSimpleName();
 
-    public PlaceholderFragment() {
+    public MusicPlayerFragment(List<HashMap<String, String>> songs) {
+        this.songs = songs;
     }
 
     @Override
@@ -97,7 +96,7 @@ public class PlaceholderFragment extends Fragment {
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
 
-        defineServiceConnection();// we define our service connection mConnection
+        defineServiceConnection(); // we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
                 , Context.BIND_AUTO_CREATE);
 
@@ -187,8 +186,10 @@ public class PlaceholderFragment extends Fragment {
 
                 mBound = true;
 
-                if (filePaths != null)
-                    initQueue();
+                if (songs != null){
+                    mService.addMusicToQueue(songs);
+                    mService.playInit();
+                }
                 Log.d(LOG_TAG, "Service is connected and well to go");
 
             }
@@ -200,13 +201,6 @@ public class PlaceholderFragment extends Fragment {
             }
         };
     }
-
-    private synchronized void initQueue(){
-        mService.addMusicToQueue(library);
-        mService.playInit();
-    }
-
-
 
     @Override
     public void onDestroy() {

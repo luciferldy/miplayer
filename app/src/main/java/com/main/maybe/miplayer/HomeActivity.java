@@ -8,14 +8,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
-import com.main.maybe.miplayer.adapter.MainViewPagerAdapter;
+import com.main.maybe.miplayer.adapter.HomeVPAdapter;
 
 
-public class MainActivity extends ActionBarActivity {
+public class HomeActivity extends ActionBarActivity {
 
     private PagerSlidingTabStrip mainTabs;
     private ViewPager mainPagers;
-    private MainViewPagerAdapter mainPagerAdapter;
+    private HomeVPAdapter mainPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity {
         // full screen
         // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // maybe mean nothing
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.home);
         initPaper();
     }
 
@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
         mainTabs = (PagerSlidingTabStrip)findViewById(R.id.main_tabs);
         mainTabs.setShouldExpand(true);
         mainPagers = (ViewPager)findViewById(R.id.main_pager);
-        mainPagerAdapter = new MainViewPagerAdapter(getSupportFragmentManager());
+        mainPagerAdapter = new HomeVPAdapter(getSupportFragmentManager());
 
         mainPagers.setAdapter(mainPagerAdapter);
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());

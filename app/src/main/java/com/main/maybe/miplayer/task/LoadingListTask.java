@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.main.maybe.miplayer.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.adapter.ArtistListAdapter;
@@ -38,6 +41,8 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     private ListView lv;
     private LayoutInflater mInflater;
 
+    private String TAG_MSG = LoadingListTask.class.getSimpleName();
+
     public LoadingListTask(int type, Context context, ListView lv, LayoutInflater mInflater){
         this.type = type;
         this.context = context;
@@ -47,10 +52,18 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean aBoolean) {
+        // success
         if (aBoolean){
             switch (type){
                 case 0:
                     lv.setAdapter(new SongListAdapter(items, mInflater));
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            // add the item to music queue
+                            // play music
+                        }
+                    });
                     break;
                 case 1:
                     lv.setAdapter(new ArtistListAdapter(items, mInflater));
@@ -61,6 +74,21 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
             }
         }else {
             // notice that something wrong
+            String v;
+            switch (type){
+                case 0:
+                    v = "歌曲";
+                    break;
+                case 1:
+                    v = "艺术家";
+                    break;
+                case 2:
+                    v = "专辑";
+                    break;
+                default:
+                    v = "";
+            }
+            Toast.makeText(context, "没有成功从"+v+"列表成功获得信息", Toast.LENGTH_SHORT);
         }
     }
 
@@ -87,17 +115,27 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public ArrayList<HashMap<String, String>> getSongFromProvider(){
         ArrayList<HashMap<String, String>> songs = new ArrayList<>();
         ContentResolver resolver = context.getContentResolver();
+        int second;
         try {
             Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
             HashMap<String, String> item;
+//            Log.d(TAG_MSG, "songs id");
             while (cursor.moveToNext()){
                 item = new HashMap<>();
                 item.put(songId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
+
+                second = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))) / 1000;
+
+
                 item.put(songName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                item.put(duration, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                item.put(duration, (second/60)+":"+(second%60));
                 item.put(path, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                 songs.add(item);
             }
@@ -116,8 +154,13 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
             Cursor cursor = resolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Albums.DEFAULT_SORT_ORDER);
             HashMap<String, String> item;
+
+//            Log.d(TAG_MSG, "albums id");
             while (cursor.moveToNext()){
                 item = new HashMap<>();
+
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
+
                 item.put(albumId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)));
@@ -138,8 +181,12 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
             Cursor cursor = resolver.query(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Artists.DEFAULT_SORT_ORDER);
             HashMap<String, String> item;
+//            Log.d(TAG_MSG, "artist id");
             while (cursor.moveToNext()){
                 item = new HashMap<>();
+
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
+
                 item.put(artistId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
                 item.put(songNumber, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
