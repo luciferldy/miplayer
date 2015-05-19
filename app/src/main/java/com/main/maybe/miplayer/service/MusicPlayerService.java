@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
@@ -336,7 +337,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public RemoteViews getExpandView(){
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
 
-        Bitmap albumCover = mNowPlaying.getCurrentPlaying().getAlbumCover();
+        Bitmap albumCover = BitmapFactory.decodeResource(this.getResources(), R.drawable.album_cover);
         if (albumCover != null){
             // two ways to get the album cover
 //            Uri albumCoverUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), albumCover, null, null));
