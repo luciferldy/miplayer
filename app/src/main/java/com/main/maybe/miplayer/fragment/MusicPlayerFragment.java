@@ -23,6 +23,7 @@ import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.SeekBarTextCallBack;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
+import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,13 +55,18 @@ public class MusicPlayerFragment extends Fragment {
 
     private final String LOG_TAG = MusicPlayerFragment.class.getSimpleName();
 
-    public MusicPlayerFragment(List<HashMap<String, String>> songs) {
-        this.songs = songs;
+    public MusicPlayerFragment(){
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // get the data
+        Bundle bundle = getArguments();
+        songs = (ArrayList<HashMap<String, String>>)bundle.getSerializable(LoadingListTask.songList);
+
         View rootView = inflater.inflate(R.layout.playmusic, container, false);
 
         playTitle = (TextView)rootView.findViewById(R.id.play_song_name);

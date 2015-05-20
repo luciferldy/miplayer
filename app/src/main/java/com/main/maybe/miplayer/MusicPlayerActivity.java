@@ -23,9 +23,14 @@ public class MusicPlayerActivity extends ActionBarActivity {
         Intent intent = getIntent();
         songs = (ArrayList<HashMap<String, String>>)intent.getSerializableExtra(LoadingListTask.songList);
         if (savedInstanceState == null) {
+
+            MusicPlayerFragment mpf = new MusicPlayerFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.music_player_container, new MusicPlayerFragment(songs))
+                    .add(R.id.music_player_container,mpf)
                     .commit();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(LoadingListTask.songList, songs);
+            mpf.setArguments(bundle);
         }
 
     }
