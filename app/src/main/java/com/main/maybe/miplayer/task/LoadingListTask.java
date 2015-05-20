@@ -2,6 +2,7 @@ package com.main.maybe.miplayer.task;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.main.maybe.miplayer.MusicPlayerActivity;
 import com.main.maybe.miplayer.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
@@ -30,6 +32,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public static final String artistName = "artistName";
     public static final String albumName = "albumName";
     public static final String path = "path";
+    public static final String duration_t = "duration_t";
     public static final String duration = "duration";
 
     public static final String artistId = "artistId";
@@ -37,11 +40,13 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
 
     public static final String albumId = "albumId";
 
+    public static final String songList = "songList";
+
     private ArrayList<HashMap<String, String>> items;
     private ListView lv;
     private LayoutInflater mInflater;
 
-    private String TAG_MSG = LoadingListTask.class.getSimpleName();
+    private String LOG_TAG = LoadingListTask.class.getSimpleName();
 
     public LoadingListTask(int type, Context context, ListView lv, LayoutInflater mInflater){
         this.type = type;
@@ -62,6 +67,9 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             // add the item to music queue
                             // play music
+                            Intent intent = new Intent(context, MusicPlayerActivity.class);
+                            intent.putExtra(songList, items);
+                            context.startActivity(intent);
                         }
                     });
                     break;
@@ -136,6 +144,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
                 item.put(duration, (second/60)+":"+(second%60));
+                item.put(duration_t, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                 item.put(path, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                 songs.add(item);
             }

@@ -238,7 +238,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration));
+                    // /s
+                    int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration_t))/1000;
                     mSeekBar.setMax(totalTime*1000);
 
                     int minutes = totalTime/60, seconds = totalTime%60;
