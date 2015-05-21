@@ -36,7 +36,7 @@ public class SongListAdapter extends BaseAdapter {
 
         if (convertView == null){
             item = new SongItem();
-            convertView = mInflater.inflate(R.layout.songlistitem, null);
+            convertView = mInflater.inflate(R.layout.songlistitem, parent, false);
 
             item.songName = (TextView)convertView.findViewById(R.id.song_name);
             item.artistName = (TextView)convertView.findViewById(R.id.song_singer);

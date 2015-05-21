@@ -31,7 +31,7 @@ public class AlbumListAdapter extends BaseAdapter {
         AlbumItem item;
         if (convertView==null){
             item = new AlbumItem();
-            convertView = mInflater.inflate(R.layout.albumlistitem, null);
+            convertView = mInflater.inflate(R.layout.albumlistitem, parent, false);
 
             item.albumCover = (ImageView)convertView.findViewById(R.id.album_cover);
             item.albumName = (TextView)convertView.findViewById(R.id.album_name);

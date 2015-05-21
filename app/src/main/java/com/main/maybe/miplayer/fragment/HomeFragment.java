@@ -49,7 +49,6 @@ public class HomeFragment extends Fragment {
 
         final int margin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics());
         params.setMargins(margin, margin, margin ,margin);
-
         // switch options
         switch (position) {
             case 0:
@@ -89,8 +88,8 @@ public class HomeFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         ListView artistList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
-
         (new LoadingListTask(1, getActivity(), artistList, inflater)).execute();
+
         return linearLayout;
     }
 
@@ -99,7 +98,6 @@ public class HomeFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         ListView albumList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
-
         (new LoadingListTask(2, getActivity(), albumList, inflater)).execute();
         return linearLayout;
     }

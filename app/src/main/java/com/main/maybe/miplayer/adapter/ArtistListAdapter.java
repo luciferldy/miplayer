@@ -31,7 +31,7 @@ public class ArtistListAdapter extends BaseAdapter {
         ArtistItem item;
         if (convertView==null){
             item = new ArtistItem();
-            convertView = mInflater.inflate(R.layout.artistlistitem, null);
+            convertView = mInflater.inflate(R.layout.artistlistitem, parent, false);
             item.artistCover = (ImageView)convertView.findViewById(R.id.artist_cover);
             item.artistName = (TextView)convertView.findViewById(R.id.artist_name);
             item.songNumber = (TextView)convertView.findViewById(R.id.artist_song_number);
