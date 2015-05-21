@@ -8,7 +8,7 @@
     <include layout="@layout/bottom_touch_play" />
 
     <RelativeLayout
-        android:id="@+id/song_from_album_list"
+        android:id="@+id/song_from_album_or_art_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@id/bottom_music_show">

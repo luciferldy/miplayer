@@ -26,7 +26,7 @@ import java.util.HashMap;
 /**
  * Created by Maybe霏 on 2015/5/21.
  */
-public class SongInAlbumFragment extends Fragment {
+public class SongInAlbumOrArtFragment extends Fragment {
 
     ListView songList;
 
