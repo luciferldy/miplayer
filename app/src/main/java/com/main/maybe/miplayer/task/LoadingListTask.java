@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.MusicPlayerActivity;
+import com.main.maybe.miplayer.SongInAlbumOrArtActivity;
 import com.main.maybe.miplayer.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
@@ -74,17 +75,33 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                     });
                     break;
                 case 1:
+                    // artist
                     lv.setAdapter(new ArtistListAdapter(items, mInflater));
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            int Id;
+                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.artistId));
+                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
+                            intent.putExtra("type", "artist");
+                            intent.putExtra(LoadingListTask.artistId, Id);
+                            context.startActivity(intent);
+                        }
+                    });
                     break;
                 case 2:
+                    // album
                     lv.setAdapter(new AlbumListAdapter(items, mInflater));
                     lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             // replace the fragment
-                            int albumId;
-                            albumId = Integer.parseInt(items.get(position).get(LoadingListTask.albumId));
-
+                            int Id;
+                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.albumId));
+                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
+                            intent.putExtra("type", "album");
+                            intent.putExtra(LoadingListTask.albumId, Id);
+                            context.startActivity(intent);
                         }
                     });
                     break;
