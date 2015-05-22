@@ -1,6 +1,7 @@
 package com.main.maybe.miplayer.fragment;
 
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,10 +13,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.main.maybe.miplayer.MusicPlayerActivity;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
 import com.main.maybe.miplayer.task.LoadingListTask;
@@ -82,6 +85,15 @@ public class SongInAlbumOrArtFragment extends Fragment {
             if (aBoolean){
                 songList.setAdapter(new SongListAdapter(songs, inflater));
                 // set the click event
+                songList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
+                        intent.putExtra(LoadingListTask.songList, songs);
+                        intent.putExtra(LoadingListTask.playPosition, position);
+                        startActivity(intent);
+                    }
+                });
             }else {
                 Toast.makeText(getActivity(), "can not get songs of album", Toast.LENGTH_SHORT).show();
             }

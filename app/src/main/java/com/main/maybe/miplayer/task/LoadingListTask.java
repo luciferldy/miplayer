@@ -42,6 +42,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public static final String albumId = "albumId";
 
     public static final String songList = "songList";
+    public static final String playPosition = "playPosition";
 
     private ArrayList<HashMap<String, String>> items;
     private ListView lv;
@@ -70,6 +71,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                             // play music
                             Intent intent = new Intent(context, MusicPlayerActivity.class);
                             intent.putExtra(songList, items);
+                            intent.putExtra(playPosition, position);
                             context.startActivity(intent);
                         }
                     });

@@ -76,23 +76,8 @@ public class MusicPlayerFragment extends Fragment {
         playPausedButton = (ImageButton)rootView.findViewById(R.id.play_paused);
         playPausedButton.setClickable(false);
         playPreviousButton = (ImageButton)rootView.findViewById(R.id.play_previous);
-        playPreviousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPausedButton.setImageResource(R.drawable.song_play);
-                mService.playPrevious();
-            }
-        });
         playPreviousButton.setClickable(false);
         playNextButton = (ImageButton)rootView.findViewById(R.id.play_next);
-        playNextButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // set the icon play
-                playPausedButton.setImageResource(R.drawable.song_play);
-                mService.playNext();
-            }
-        });
         playNextButton.setClickable(false);
 
         mSeekBar = (SeekBar) rootView.findViewById(R.id.play_progress);
@@ -187,7 +172,7 @@ public class MusicPlayerFragment extends Fragment {
                 });
 
                 state = mService.getState();
-                setPlayPauseOnClickListener();
+                setButtonOnClickListener();
                 mService.registerSeekBar(mSeekBar);
 
                 mBound = true;
@@ -216,7 +201,7 @@ public class MusicPlayerFragment extends Fragment {
         mBound = false;
     }
 
-    private void setPlayPauseOnClickListener(){
+    private void setButtonOnClickListener(){
         playPausedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -231,6 +216,23 @@ public class MusicPlayerFragment extends Fragment {
                             break;
                     }
                 }
+            }
+        });
+
+        playPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                playPausedButton.setImageResource(R.drawable.song_play);
+                mService.playPrevious();
+            }
+        });
+
+        playNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // set the icon play
+                playPausedButton.setImageResource(R.drawable.song_play);
+                mService.playNext();
             }
         });
     }
