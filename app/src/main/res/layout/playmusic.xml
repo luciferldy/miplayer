@@ -28,25 +28,27 @@
             android:layout_alignTop="@id/play_back"
             android:layout_toRightOf="@id/play_back"
             android:textStyle="bold"
-            android:textSize="23sp"
-            android:hint=""/>
+            android:textSize="19sp"
+            android:hint="21 Guns"/>
         <TextView
             android:id="@+id/play_album"
             android:layout_width="wrap_content"
             android:layout_height="17dp"
+            android:maxWidth="140dp"
             android:layout_toRightOf="@id/play_back"
             android:layout_below="@id/play_song_name"
             android:layout_marginRight="5dp"
-            android:textSize="15sp"
-            android:text=""/>
+            android:textSize="13sp"
+            android:text="American Idol"/>
         <TextView
             android:id="@+id/play_singer"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="17dp"
+            android:maxWidth="120dp"
             android:layout_below="@id/play_song_name"
             android:layout_toRightOf="@id/play_album"
-            android:textSize="15sp"
-            android:hint=""/>
+            android:textSize="13sp"
+            android:hint="Green Day"/>
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/play_messageend"

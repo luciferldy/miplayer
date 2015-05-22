@@ -10,8 +10,8 @@
     <TextView
         android:id="@+id/song_name"
         android:layout_width="wrap_content"
-        android:layout_height="19dp"
-        android:textSize="17dp"
+        android:layout_height="20dp"
+        android:textSize="15dp"
         android:layout_alignParentLeft="true"
         android:textStyle="bold"
         android:text="21 guns"/>
@@ -22,7 +22,7 @@
         android:maxWidth="60dp"
         android:layout_below="@id/song_name"
         android:layout_alignParentLeft="true"
-        android:textSize="12dp"
+        android:textSize="11dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginRight="3dp"
@@ -34,7 +34,7 @@
         android:maxWidth="150dp"
         android:layout_below="@id/song_name"
         android:layout_toRightOf="@id/song_duration"
-        android:textSize="12dp"
+        android:textSize="11dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:layout_marginLeft="3dp"
