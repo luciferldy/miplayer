@@ -49,6 +49,7 @@ public class MusicPlayerFragment extends Fragment {
     ServiceConnection mConnection;
     SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener;
     boolean mBound = false;
+    int playPosition;
 
     int state;
     private List<HashMap<String, String>> songs = new ArrayList<>();
@@ -66,6 +67,8 @@ public class MusicPlayerFragment extends Fragment {
         // get the data
         Bundle bundle = getArguments();
         songs = (ArrayList<HashMap<String, String>>)bundle.getSerializable(LoadingListTask.songList);
+        int isPlayMusic = bundle.getInt(LoadingListTask.isPlayMusic);
+        playPosition = bundle.getInt(LoadingListTask.playPosition);
 
         View rootView = inflater.inflate(R.layout.playmusic, container, false);
 
@@ -82,22 +85,29 @@ public class MusicPlayerFragment extends Fragment {
 
         mSeekBar = (SeekBar) rootView.findViewById(R.id.play_progress);
         initOnSeekBarChangeListener();
+        initButtonOnClickListener();
         mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
 
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
 
+        if (isPlayMusic == 1){
+            playMusic();
+        }
+        return rootView;
+    }
+
+    public void playMusic(){
         defineServiceConnection(); // we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
                 , Context.BIND_AUTO_CREATE);
-
-        return rootView;
     }
 
     private void initOnSeekBarChangeListener(){
         mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seekBar.setProgress(progress);
                 if (mService == null || !fromUser)
                     return;
                 mService.skipToPoint(progress);
@@ -122,9 +132,11 @@ public class MusicPlayerFragment extends Fragment {
     }
 
     private void defineServiceConnection() {
+        // 建立连接时开启了一个服务，并且返回了能够通信使用的Binder
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
+
                 getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
                 mBinder = (MusicPlayerServiceBinder) service;
                 mService = mBinder.getService(new SeekBarTextCallBack() {
@@ -172,17 +184,17 @@ public class MusicPlayerFragment extends Fragment {
                 });
 
                 state = mService.getState();
-                setButtonOnClickListener();
                 mService.registerSeekBar(mSeekBar);
 
                 mBound = true;
 
                 if (songs != null){
                     mService.addMusicToQueue(songs);
-                    mService.playInit();
                 }
                 Log.d(LOG_TAG, "Service is connected and well to go");
 
+                // 成功建立连接之后开始放歌
+                mService.play(playPosition);
             }
 
             @Override
@@ -201,10 +213,12 @@ public class MusicPlayerFragment extends Fragment {
         mBound = false;
     }
 
-    private void setButtonOnClickListener(){
+    private void initButtonOnClickListener(){
         playPausedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mService == null)
+                    return;
                 if (mBound){
                     state = mService.changeState();
                     switch (state){
@@ -222,7 +236,9 @@ public class MusicPlayerFragment extends Fragment {
         playPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playPausedButton.setImageResource(R.drawable.song_play);
+                if (mService == null)
+                    return;
+//                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playPrevious();
             }
         });
@@ -231,7 +247,9 @@ public class MusicPlayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // set the icon play
-                playPausedButton.setImageResource(R.drawable.song_play);
+                if (mService == null)
+                    return;
+//                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playNext();
             }
         });

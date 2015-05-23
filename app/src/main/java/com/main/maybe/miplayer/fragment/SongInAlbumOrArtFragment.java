@@ -91,6 +91,8 @@ public class SongInAlbumOrArtFragment extends Fragment {
                         Intent intent = new Intent(getActivity(), MusicPlayerActivity.class);
                         intent.putExtra(LoadingListTask.songList, songs);
                         intent.putExtra(LoadingListTask.playPosition, position);
+                        // click and jump activity and play music
+                        intent.putExtra(LoadingListTask.isPlayMusic, 1);
                         startActivity(intent);
                     }
                 });
