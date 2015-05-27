@@ -25,7 +25,10 @@ import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.task.LoadingListTask;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +40,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
+
+    public final static String CurrentListPath = "assets/mylist";
+    public final static String PlayingNumber = "PlayingNumber"; // 播放的序号
 
     private final static int PLAY_MUSIC_NOTIFICATION_ID = 1;
 
@@ -88,6 +94,30 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             }
         }
     };
+
+    public boolean storeSerializableList(){
+        ArrayList<HashMap<String, String>> stores;
+        try {
+            File file = new File(CurrentListPath);
+            // if exist, delete
+            if (file.exists()){
+                file.delete();
+                file = new File(CurrentListPath);
+            }
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            stores = mNowPlaying;
+            HashMap<String, String> map = new HashMap<>();
+            map.put(PlayingNumber, current_position+"");
+            stores.add(map);
+
+            oos.writeObject(stores);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
 
     public void registerSeekBar(SeekBar mSeekBar){
         this.mSeekBar = mSeekBar;
@@ -212,6 +242,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         mMediaPlayer.reset();
         mMediaPlayer.release();
 
+        // store the music list
+        storeSerializableList();
+
         Toast.makeText(this, "Unbind with state:　"+((state == PLAYING) ? "PLAYING" : "PAUSED"),
                 Toast.LENGTH_SHORT).show();
         return true;
@@ -247,6 +280,25 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 current_position--;
             playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        // 将播放列表序列化
+        try{
+            File f = new File(CurrentListPath);
+            if (f.exists()){
+                f.delete();
+            }else {
+                f = new File(CurrentListPath);
+            }
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(mNowPlaying);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        super.onDestroy();
     }
 
     // play music selected
