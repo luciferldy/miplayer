@@ -9,12 +9,12 @@ import com.main.maybe.miplayer.service.MusicPlayerService;
 /**
  * Created by Maybe霏 on 2015/3/4.
  */
-public class MusicPlayerServiceBinder extends Binder {
+public class FullScreenMusicPlayerServiceBinder extends Binder {
     MusicPlayerService mMusicPlayerService;
     Context mApplication;
     SeekBarTextCallBack mSeekBarTextCallBack;
 
-    public MusicPlayerServiceBinder(MusicPlayerService musicPlayerService, Context application){
+    public FullScreenMusicPlayerServiceBinder(MusicPlayerService musicPlayerService, Context application){
         mMusicPlayerService = musicPlayerService;
         mApplication = application;
     }
