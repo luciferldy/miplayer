@@ -22,7 +22,8 @@ import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
 import com.main.maybe.miplayer.R;
-import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
+import com.main.maybe.miplayer.binder.BottomMusicPlayerServiceBinder;
+import com.main.maybe.miplayer.binder.FullScreenMusicPlayerServiceBinder;
 import com.main.maybe.miplayer.task.LoadingListTask;
 
 import java.io.File;
@@ -40,6 +41,10 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
+    public final static int BOTTOM_PLAYER_ACTIVITY = 1;
+    public final static int FULLSCREEN_PLAYER_ACTIVITY = 2;
+
+    public final static String MUSIC_PLAYER_SERVICE_NAME = "com.main.maybe.miplayer.service.MusicPlayerService";
 
     public final static String CurrentListPath = "assets/mylist";
     public final static String PlayingNumber = "PlayingNumber"; // 播放的序号
@@ -53,7 +58,15 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private int state = PAUSED;
     private int current_position = 0;
 
-    private MusicPlayerServiceBinder mMusicPlayerServiceBinder;
+    /*
+     * 绑定的活动
+     * 0 表示快捷播放器
+     * 1 表示全屏播放器
+     */
+    public int bindActivity = 0;
+
+    private BottomMusicPlayerServiceBinder bmpBinder;
+    private FullScreenMusicPlayerServiceBinder fsmpBinder;
     private ArrayList<HashMap<String, String>> mNowPlaying;
     private MediaPlayer mMediaPlayer;
     private OnCompletionListener mCompletionListener;
@@ -63,37 +76,114 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     private AsyncTask<Integer, Void, Void> seekBarChanger;
 
-    private String LOG_TAG = MusicPlayerService.class.getSimpleName();
+    private final String LOG_TAG = MusicPlayerService.class.getSimpleName();
 
     private Notification mNotification;
     private NotificationManager mNotificationManager;
 
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what){
-                case 0:
-                    int currentPosition = (int)msg.obj;
-                    if (mMusicPlayerServiceBinder != null || currentPosition == 0){
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(LOG_TAG, LOG_TAG+" is onCreate");
+    }
 
-                        int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
-                        if (minutes >= 10 && seconds >= 10){
-                            mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":" + seconds);
-                        }else if (minutes >= 10 && seconds < 10){
-                            mMusicPlayerServiceBinder.setCurrentTime("" + minutes + ":0" + seconds);
-                        }else if (minutes < 10 && seconds >= 10){
-                            mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":" + seconds);
-                        }else {
-                            mMusicPlayerServiceBinder.setCurrentTime("0" + minutes + ":0" + seconds);
-                        }
-                    }
-                    break;
-                case 1:
-                    Log.d(LOG_TAG, "handle message fail.");
-                    break;
+    // 绑定快捷播放
+    public boolean bindBottomPlayer(){
+        bmpBinder = new BottomMusicPlayerServiceBinder(this, this);
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+
+                // set music information
+                bmpBinder.setSongName(mNowPlaying.get(current_position).get(LoadingListTask.songName));
+                bmpBinder.setArtistName(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
+
+                // 将 getDuration 和 play 放在这里保证获取信息时加载完成
+                setSeekBarTracker(mMediaPlayer.getDuration());
+                play();
             }
-        }
-    };
+        });
+        return true;
+    }
+
+    // 绑定全屏播放
+    public boolean bindFullScreenPlayer(){
+
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what){
+                    case 0:
+                        int currentPosition = (int)msg.obj;
+                        if (fsmpBinder != null || currentPosition == 0){
+
+                            int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
+                            if (minutes >= 10 && seconds >= 10){
+                                fsmpBinder.setCurrentTime("" + minutes + ":" + seconds);
+                            }else if (minutes >= 10 && seconds < 10){
+                                fsmpBinder.setCurrentTime("" + minutes + ":0" + seconds);
+                            }else if (minutes < 10 && seconds >= 10){
+                                fsmpBinder.setCurrentTime("0" + minutes + ":" + seconds);
+                            }else {
+                                fsmpBinder.setCurrentTime("0" + minutes + ":0" + seconds);
+                            }
+                        }
+                        break;
+                    case 1:
+                        Log.d(LOG_TAG, "handle message fail.");
+                        break;
+                }
+            }
+        };
+
+        fsmpBinder = new FullScreenMusicPlayerServiceBinder(this, this);
+
+        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                // /s
+                int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration_t)) / 1000;
+                // SeekBar 的长度是 ms 级的
+                mSeekBar.setMax(totalTime * 1000);
+
+                int minutes = totalTime / 60, seconds = totalTime % 60;
+                if (minutes >= 10 && seconds >= 10) {
+                    fsmpBinder.setTotalTime("" + minutes + ":" + seconds);
+                } else if (minutes >= 10 && seconds < 10) {
+                    fsmpBinder.setTotalTime("" + minutes + ":0" + seconds);
+                } else if (minutes < 10 && seconds >= 10) {
+                    fsmpBinder.setTotalTime("0" + minutes + ":" + seconds);
+                } else {
+                    fsmpBinder.setTotalTime("0" + minutes + ":0" + seconds);
+                }
+
+                // set music information
+                fsmpBinder.setMusicTitle(mNowPlaying.get(current_position).get(LoadingListTask.songName));
+                fsmpBinder.setMusicAlbum(mNowPlaying.get(current_position).get(LoadingListTask.albumName));
+                fsmpBinder.setMusicArtist(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
+
+                // 将 getDuration 和 play 放在这里保证获取信息时加载完成
+                setSeekBarTracker(mMediaPlayer.getDuration());
+                play();
+            }
+        });
+        return true;
+    }
+
+    /*
+     * 判断Service中是否有队列
+     * true 有播放队列
+     * false 没有播放队列
+     */
+    public boolean hasPlayingQueue(){
+        if ( mNowPlaying != null && mNowPlaying.size() != 0 )
+            return true;
+        else
+            return false;
+    }
+
+    // 只负责绑定 player 界面
+    private Handler handler;
 
     public boolean storeSerializableList(){
         ArrayList<HashMap<String, String>> stores;
@@ -151,16 +241,30 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public void play() {
         state = PLAYING;
         mMediaPlayer.start();
-        if (mMusicPlayerServiceBinder != null)
-            mMusicPlayerServiceBinder.setImagePaused();
+        switch (bindActivity){
+            case BOTTOM_PLAYER_ACTIVITY:
+                if (bmpBinder != null)
+                    bmpBinder.setImagePaused();
+                break;
+            case FULLSCREEN_PLAYER_ACTIVITY:
+                if (fsmpBinder != null)
+                    fsmpBinder.setImagePaused();
+        }
     }
 
     @Override
     public void pause() {
         state = PAUSED;
         mMediaPlayer.pause();
-        if (mMusicPlayerServiceBinder != null)
-            mMusicPlayerServiceBinder.setImagePlay();
+        switch (bindActivity){
+            case BOTTOM_PLAYER_ACTIVITY:
+                if (bmpBinder != null)
+                    bmpBinder.setImagePlay();
+                break;
+            case FULLSCREEN_PLAYER_ACTIVITY:
+                if (fsmpBinder != null)
+                    fsmpBinder.setImagePlay();
+        }
     }
 
     public int changeState(){
@@ -177,44 +281,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public IBinder onBind(Intent intent) {
-
-        mMusicPlayerServiceBinder = new MusicPlayerServiceBinder(this, this);
         state = PLAYING;
         // the now playing queue
         mNowPlaying = new ArrayList<>();
         // the media player
         mMediaPlayer = new MediaPlayer();
-//        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                // /s
-                int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration_t))/1000;
-                // SeekBar 的长度是 ms 级的
-                mSeekBar.setMax(totalTime*1000);
-
-                int minutes = totalTime/60, seconds = totalTime%60;
-                if (minutes >= 10 && seconds >= 10){
-                    mMusicPlayerServiceBinder.setTotalTime(""+minutes+":"+seconds);
-                }else if (minutes >= 10 && seconds < 10){
-                    mMusicPlayerServiceBinder.setTotalTime(""+minutes+":0"+seconds);
-                }else if (minutes < 10 && seconds >= 10){
-                    mMusicPlayerServiceBinder.setTotalTime("0"+minutes+":"+seconds);
-                }else {
-                    mMusicPlayerServiceBinder.setTotalTime("0"+minutes+":0"+seconds);
-                }
-
-                // set music information
-                mMusicPlayerServiceBinder.setMusicTitle(mNowPlaying.get(current_position).get(LoadingListTask.songName));
-                mMusicPlayerServiceBinder.setMusicAlbum(mNowPlaying.get(current_position).get(LoadingListTask.albumName));
-                mMusicPlayerServiceBinder.setMusicArtist(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
-
-                // 将 getDuration 和 play 放在这里保证获取信息时加载完成
-                setSeekBarTracker(mMediaPlayer.getDuration());
-                play();
-            }
-        });
-
         mCompletionListener = new OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
@@ -227,16 +298,30 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         registerReceiver(mHeadPhoneBroadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
         mHeadPhoneBroadcastReceiver.registerMusicPlayerService(this);
 
-        return mMusicPlayerServiceBinder;
+        // bind the service
+        switch (bindActivity){
+            case BOTTOM_PLAYER_ACTIVITY:
+                bindBottomPlayer();
+                return bmpBinder;
+            case FULLSCREEN_PLAYER_ACTIVITY:
+                bindFullScreenPlayer();
+                return fsmpBinder;
+            default:
+                Log.d(LOG_TAG, "on bind error");
+                return null;
+        }
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
         unregisterReceiver(mHeadPhoneBroadcastReceiver);
 
-        if (seekBarChanger != null)
-            seekBarChanger.cancel(false);
-        seekBarChanger = null;
+        switch (bindActivity){
+            case FULLSCREEN_PLAYER_ACTIVITY:
+                if (seekBarChanger != null)
+                    seekBarChanger.cancel(false);
+                seekBarChanger = null;
+        }
 
         mMediaPlayer.stop();
         mMediaPlayer.reset();
@@ -261,25 +346,19 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     }
 
     public synchronized void playNext(){
-        if (mMusicPlayerServiceBinder != null){
-//            mMusicPlayerServiceBinder.setImagePlay();
-            if ((current_position+1) == mNowPlaying.size())
-                current_position = 0;
-            else
-                current_position++;
-            playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
-        }
+        if ((current_position+1) == mNowPlaying.size())
+            current_position = 0;
+        else
+            current_position++;
+        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
     }
 
     public synchronized void playPrevious(){
-        if (mMusicPlayerServiceBinder != null){
-//            mMusicPlayerServiceBinder.setImagePlay();
-            if ((current_position-1) == -1)
-                current_position = mNowPlaying.size()-1;
-            else
-                current_position--;
-            playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
-        }
+        if ((current_position-1) == -1)
+            current_position = mNowPlaying.size()-1;
+        else
+            current_position--;
+        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
     }
 
     @Override
@@ -297,7 +376,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         }catch (Exception e){
             e.printStackTrace();
         }
-
         super.onDestroy();
     }
 
@@ -378,7 +456,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -396,7 +473,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         }
     }
 
-    // this is for notification
+    // 这是为了大屏的 Notification
     public RemoteViews getExpandView(){
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
 
