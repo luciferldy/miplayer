@@ -19,9 +19,10 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.main.maybe.miplayer.HomeActivity;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.SeekBarTextCallBack;
-import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
+import com.main.maybe.miplayer.binder.FullScreenMusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
 
@@ -45,7 +46,7 @@ public class MusicPlayerFragment extends Fragment {
     private TextView playArtist;
 
     MusicPlayerService mService;
-    MusicPlayerServiceBinder mBinder;
+    FullScreenMusicPlayerServiceBinder mBinder;
     ServiceConnection mConnection;
     SeekBar.OnSeekBarChangeListener mOnSeekBarChangeListener;
     boolean mBound = false;
@@ -56,9 +57,7 @@ public class MusicPlayerFragment extends Fragment {
 
     private final String LOG_TAG = MusicPlayerFragment.class.getSimpleName();
 
-    public MusicPlayerFragment(){
-
-    }
+    public MusicPlayerFragment(){}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +66,7 @@ public class MusicPlayerFragment extends Fragment {
         // get the data
         Bundle bundle = getArguments();
         songs = (ArrayList<HashMap<String, String>>)bundle.getSerializable(LoadingListTask.songList);
-        int isPlayMusic = bundle.getInt(LoadingListTask.isPlayMusic);
+        int isPlayMusic = bundle.getInt(LoadingListTask.isPlayMusic); // 是否播放音乐
         playPosition = bundle.getInt(LoadingListTask.playPosition);
 
         View rootView = inflater.inflate(R.layout.playmusic, container, false);
@@ -91,18 +90,21 @@ public class MusicPlayerFragment extends Fragment {
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
 
+        // 参数传递过来表示放歌
         if (isPlayMusic == 1){
-            playMusic();
+            bindMusicService();
         }
         return rootView;
     }
 
-    public void playMusic(){
+    // bind the music service
+    public void bindMusicService(){
         defineServiceConnection(); // we define our service connection mConnection
         getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
                 , Context.BIND_AUTO_CREATE);
     }
 
+    // 初始化进度条的监听器
     private void initOnSeekBarChangeListener(){
         mOnSeekBarChangeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -131,14 +133,15 @@ public class MusicPlayerFragment extends Fragment {
         };
     }
 
+    // 获取与 service 的连接
     private void defineServiceConnection() {
         // 建立连接时开启了一个服务，并且返回了能够通信使用的Binder
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-
-                getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
-                mBinder = (MusicPlayerServiceBinder) service;
+                if (!HomeActivity.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()))
+                    getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
+                mBinder = (FullScreenMusicPlayerServiceBinder) service;
                 mService = mBinder.getService(new SeekBarTextCallBack() {
                     @Override
                     public void setCurrentTime(String time) {
@@ -205,20 +208,23 @@ public class MusicPlayerFragment extends Fragment {
         };
     }
 
+    // 当 fragment 隐藏不见时，可以解除绑定
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        getActivity().stopService(new Intent(getActivity(), MusicPlayerService.class));
+    public void onStop() {
+        super.onStop();
         getActivity().unbindService(mConnection);
         mBound = false;
     }
 
+    // 初始化页面的播放器按钮
     private void initButtonOnClickListener(){
         playPausedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mService == null)
+                if (mService == null){
+                    defineServiceConnection();
                     return;
+                }
                 if (mBound){
                     state = mService.changeState();
                     switch (state){
@@ -237,8 +243,8 @@ public class MusicPlayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (mService == null)
-                    return;
-//                playPausedButton.setImageResource(R.drawable.song_play);
+                    defineServiceConnection();
+                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playPrevious();
             }
         });
@@ -248,11 +254,17 @@ public class MusicPlayerFragment extends Fragment {
             public void onClick(View v) {
                 // set the icon play
                 if (mService == null)
-                    return;
-//                playPausedButton.setImageResource(R.drawable.song_play);
+                    defineServiceConnection();
+                playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playNext();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d(LOG_TAG, LOG_TAG + "is onDestroyView");
     }
 
 }
