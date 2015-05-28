@@ -3,6 +3,7 @@ package com.main.maybe.miplayer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 
 import com.main.maybe.miplayer.fragment.MusicPlayerFragment;
 import com.main.maybe.miplayer.task.LoadingListTask;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 public class MusicPlayerActivity extends ActionBarActivity {
 
     private ArrayList<HashMap<String, String>> songs = new ArrayList<>();
+    private final String LOG_TAG = MusicPlayerActivity.class.getSimpleName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,5 +46,11 @@ public class MusicPlayerActivity extends ActionBarActivity {
                     .commit();
         }
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, LOG_TAG+"is on destroy");
     }
 }
