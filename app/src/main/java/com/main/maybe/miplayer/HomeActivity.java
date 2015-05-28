@@ -111,7 +111,7 @@ public class HomeActivity extends ActionBarActivity {
                 // 当service为空时
                 if (mMusicPlayerService == null) {
                     // 开启并绑定
-                    defineServiceConnection();
+                    bindMusicService();
                 }
                 if (mBound) {
                     mState = mMusicPlayerService.changeState();
@@ -132,7 +132,7 @@ public class HomeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (mMusicPlayerService == null) {
                     // 开启并绑定
-                    defineServiceConnection();
+                    bindMusicService();
                 }
                 if (mBound) {
                     btmPlayOrPause.setImageResource(R.drawable.song_play);
@@ -143,6 +143,12 @@ public class HomeActivity extends ActionBarActivity {
 
     }
 
+    public void bindMusicService(){
+        defineServiceConnection();
+        Intent intent = new Intent(HomeActivity.this, MusicPlayerService.class);
+        intent.putExtra(MusicPlayerService.ACTIVITY_INDENTIFY, MusicPlayerService.BOTTOM_PLAYER_ACTIVITY);
+        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
 
 
     private void defineServiceConnection(){
@@ -198,7 +204,8 @@ public class HomeActivity extends ActionBarActivity {
 
     public void parseSerializableList(){
         try {
-            FileInputStream fis = new FileInputStream(MusicPlayerService.CurrentListPath);
+
+            FileInputStream fis = new FileInputStream(MusicPlayerService.pathName+MusicPlayerService.fileName);
             ObjectInputStream ois = new ObjectInputStream(fis);
             // songs 最初列表包含了当前播放的位置
             songs = (ArrayList<HashMap<String, String>>)ois.readObject();
@@ -245,7 +252,8 @@ public class HomeActivity extends ActionBarActivity {
      */
     @Override
     protected void onStop() {
-        unbindService(mServiceConnection);
+        if (mServiceConnection != null && mMusicPlayerService != null)
+            unbindService(mServiceConnection);
         super.onStop();
         Log.d(LOG_TAG, LOG_TAG+" onStop");
     }

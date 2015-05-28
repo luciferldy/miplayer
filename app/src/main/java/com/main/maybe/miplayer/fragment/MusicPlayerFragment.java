@@ -100,7 +100,9 @@ public class MusicPlayerFragment extends Fragment {
     // bind the music service
     public void bindMusicService(){
         defineServiceConnection(); // we define our service connection mConnection
-        getActivity().bindService(new Intent(getActivity(), MusicPlayerService.class), mConnection
+        Intent intent = new Intent(getActivity(), MusicPlayerService.class);
+        intent.putExtra(MusicPlayerService.ACTIVITY_INDENTIFY, MusicPlayerService.FULLSCREEN_PLAYER_ACTIVITY);
+        getActivity().bindService(intent, mConnection
                 , Context.BIND_AUTO_CREATE);
     }
 

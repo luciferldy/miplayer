@@ -43,10 +43,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public final static int PLAYING = 1;
     public final static int BOTTOM_PLAYER_ACTIVITY = 1;
     public final static int FULLSCREEN_PLAYER_ACTIVITY = 2;
+    public final static String ACTIVITY_INDENTIFY = "ACTIVITY_INDENTIFY";
 
     public final static String MUSIC_PLAYER_SERVICE_NAME = "com.main.maybe.miplayer.service.MusicPlayerService";
 
-    public final static String CurrentListPath = "assets/mylist";
+    public final static String pathName = "/sdcard/miplayer/";
+    public final static String fileName = "playlist.txt";
+
     public final static String PlayingNumber = "PlayingNumber"; // 播放的序号
 
     private final static int PLAY_MUSIC_NOTIFICATION_ID = 1;
@@ -84,7 +87,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(LOG_TAG, LOG_TAG+" is onCreate");
+        Log.d(LOG_TAG, LOG_TAG + " is onCreate");
     }
 
     // 绑定快捷播放
@@ -187,13 +190,25 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public boolean storeSerializableList(){
         ArrayList<HashMap<String, String>> stores;
+        /*
+         * 可能需要先对磁盘的挂载情况进行判断
+         *
+         */
         try {
-            File file = new File(CurrentListPath);
-            // if exist, delete
+            File path = new File(pathName);
+            File file = new File(pathName+fileName);
+            if (!path.exists()){
+                Log.d(LOG_TAG, "path create");
+                path.mkdir();
+            }
+            // if exist, delete and create
             if (file.exists()){
                 file.delete();
-                file = new File(CurrentListPath);
+                file = new File(pathName+fileName);
+            }else {
+                file.createNewFile();
             }
+
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             stores = mNowPlaying;
@@ -281,6 +296,10 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public IBinder onBind(Intent intent) {
+
+        // get the data
+        bindActivity = intent.getIntExtra(ACTIVITY_INDENTIFY, 0);
+
         state = PLAYING;
         // the now playing queue
         mNowPlaying = new ArrayList<>();
@@ -297,7 +316,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         mHeadPhoneBroadcastReceiver = new HeadPhoneBroadcastReceiver();
         registerReceiver(mHeadPhoneBroadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
         mHeadPhoneBroadcastReceiver.registerMusicPlayerService(this);
-
         // bind the service
         switch (bindActivity){
             case BOTTOM_PLAYER_ACTIVITY:
@@ -314,21 +332,14 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public boolean onUnbind(Intent intent) {
-        unregisterReceiver(mHeadPhoneBroadcastReceiver);
-
+        if (mHeadPhoneBroadcastReceiver != null)
+            unregisterReceiver(mHeadPhoneBroadcastReceiver);
         switch (bindActivity){
             case FULLSCREEN_PLAYER_ACTIVITY:
                 if (seekBarChanger != null)
                     seekBarChanger.cancel(false);
                 seekBarChanger = null;
         }
-
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        mMediaPlayer.release();
-
-        // store the music list
-        storeSerializableList();
 
         Toast.makeText(this, "Unbind with state:　"+((state == PLAYING) ? "PLAYING" : "PAUSED"),
                 Toast.LENGTH_SHORT).show();
@@ -363,19 +374,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public void onDestroy() {
-        // 将播放列表序列化
-        try{
-            File f = new File(CurrentListPath);
-            if (f.exists()){
-                f.delete();
-            }else {
-                f = new File(CurrentListPath);
-            }
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
-            oos.writeObject(mNowPlaying);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+
+        // store the music list
+        storeSerializableList();
         super.onDestroy();
     }
 
