@@ -87,7 +87,7 @@
         android:layout_width="fill_parent"
         android:layout_height="85dp"
         android:layout_above="@id/play_messageend"
-        android:background="#2b2b2b">
+        android:background="@color/colorAccent">
         <ImageButton
             android:id="@+id/play_paused"
             android:layout_width="60dp"
