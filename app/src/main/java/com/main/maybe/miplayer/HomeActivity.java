@@ -39,6 +39,9 @@ public class HomeActivity extends ActionBarActivity {
     private ArrayList<HashMap<String, String>> songs = new ArrayList<>();
     private HashMap<String, String> currentSong = new HashMap<>();
     private int currentPosition = 0;
+    private int FROMWHERE = 0;
+    private static int FROM_MUSICPLAYER = 1;
+    private static int FROM_LAUNCHER = 2;
 
     MusicPlayerService mMusicPlayerService;
     ServiceConnection mServiceConnection;
@@ -65,6 +68,7 @@ public class HomeActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d(LOG_TAG, LOG_TAG + " is onStart");
         initBottomPlayer();
     }
 
@@ -88,30 +92,17 @@ public class HomeActivity extends ActionBarActivity {
         btmPlayOrPause = (ImageButton)findViewById(R.id.bottom_music_play);
         btmPlayNext = (ImageButton)findViewById(R.id.bottom_music_next);
 
-        parseSerializableList();
-
-        /*
-         * 当第一次进入应用，currentSong没有
-         * 当解析出现错误时，currentSong同样没有
-         */
-        if (currentSong == null){
-            btmPlayOrPause.setClickable(false);
-            btmPlayNext.setClickable(false);
-            return;
-        }
-
-        musicSongName.setText(currentSong.get(LoadingListTask.songName));
-        musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
-        btmPlayOrPause.setClickable(true);
-        btmPlayNext.setClickable(true);
-
         btmPlayOrPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // 当service为空时
+                /*
+                 * 当 mMusicPlayerService 为空时表示第一次点击进入而且是播放
+                 */
                 if (mMusicPlayerService == null) {
                     // 开启并绑定
+                    FROMWHERE = FROM_LAUNCHER;
                     bindMusicService();
+                    return;
                 }
                 if (mBound) {
                     mState = mMusicPlayerService.changeState();
@@ -131,8 +122,14 @@ public class HomeActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 if (mMusicPlayerService == null) {
-                    // 开启并绑定
+                    // 首先将CurrentPosition向后移动一位
+                    if ((currentPosition+1) == songs.size())
+                        currentPosition = 0;
+                    else
+                        currentPosition++;
+                    FROMWHERE = FROM_LAUNCHER;
                     bindMusicService();
+                    return;
                 }
                 if (mBound) {
                     btmPlayOrPause.setImageResource(R.drawable.song_play);
@@ -141,6 +138,30 @@ public class HomeActivity extends ActionBarActivity {
             }
         });
 
+
+        /*
+         * 判断是否后台有音乐播放的服务
+         */
+        if (isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getApplicationContext())){
+            FROMWHERE = FROM_MUSICPLAYER;
+            bindMusicService();
+            return;
+        }else {
+            // 否则的话从本地文件加载播放列表
+            parseSerializableList();
+        }
+        /*
+         * 当第一次进入应用，currentSong没有
+         * 当解析出现错误时，currentSong同样没有
+         */
+        if (currentSong == null){
+            btmPlayOrPause.setClickable(false);
+            btmPlayNext.setClickable(false);
+            return;
+        }else {
+            musicSongName.setText(currentSong.get(LoadingListTask.songName));
+            musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
+        }
     }
 
     public void bindMusicService(){
@@ -152,12 +173,14 @@ public class HomeActivity extends ActionBarActivity {
 
 
     private void defineServiceConnection(){
+
+        // 当后台没有服务时，需要启动
+        if (!isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getApplicationContext()))
+            getApplicationContext().startService(new Intent(getApplicationContext(), MusicPlayerService.class));
+
         mServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                // 当后台没有服务时，需要启动
-                if (!isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getApplicationContext()))
-                    getApplicationContext().startService(new Intent(getApplicationContext(), MusicPlayerService.class));
                 bmpServiceBinder = (BottomMusicPlayerServiceBinder)service;
                 mMusicPlayerService = bmpServiceBinder.getService(new BottomMusicPlayerCallBack() {
                     @Override
@@ -187,11 +210,26 @@ public class HomeActivity extends ActionBarActivity {
                 });
 
                 mBound  = true;
-                // 在连接的时候传入数据
-                if (songs != null)
-                    mMusicPlayerService.addMusicToQueue(songs);
+                // 判断建立的连接来自于启动还是上一级活动退出
+                if (FROMWHERE == FROM_MUSICPLAYER){
 
-                Log.d(LOG_TAG, LOG_TAG+" service connected and can be controlled");
+                    songs = mMusicPlayerService.getPlayingQueue();
+                    currentPosition = mMusicPlayerService.getCurrentPosition();
+                    currentSong = songs.get(currentPosition);
+                    musicSongName.setText(currentSong.get(LoadingListTask.songName));
+                    musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
+
+                    if (mMusicPlayerService.getState() == MusicPlayerService.PLAYING)
+                        btmPlayOrPause.setImageResource(R.drawable.song_pause);
+                }
+                else if (FROMWHERE == FROM_LAUNCHER){
+                    if (songs != null)
+                        mMusicPlayerService.addMusicToQueue(songs);
+                    mMusicPlayerService.play(currentPosition);
+                }else {
+                    Log.d(LOG_TAG, LOG_TAG+" find error FROMWHERE");
+                }
+                Log.d(LOG_TAG, LOG_TAG + " service connected and can be controlled");
             }
 
             @Override
@@ -247,13 +285,19 @@ public class HomeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-     * 当 activity 隐藏时，解除绑定
-     */
     @Override
-    protected void onStop() {
+    protected void onPause() {
+        super.onPause();
         if (mServiceConnection != null && mMusicPlayerService != null)
             unbindService(mServiceConnection);
+        Log.d(LOG_TAG, LOG_TAG+" is onPause");
+    }
+
+    /*
+         * 当 activity 隐藏时，解除绑定
+         */
+    @Override
+    protected void onStop() {
         super.onStop();
         Log.d(LOG_TAG, LOG_TAG+" onStop");
     }
@@ -262,9 +306,13 @@ public class HomeActivity extends ActionBarActivity {
         ActivityManager activityManager = (ActivityManager)context.getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         ArrayList<RunningServiceInfo> runningServiceInfos = (ArrayList<RunningServiceInfo>)activityManager.getRunningServices(30);
         for (int i=0; i<runningServiceInfos.size(); i++){
-            if (runningServiceInfos.get(i).service.getClassName().toString().equals(className))
+            if (runningServiceInfos.get(i).service.getClassName().toString().equals(className)){
+                Log.d("isServiceWorked", "return true");
                 return true;
+            }
+
         }
+        Log.d("isServiceWorked", "return false");
         return false;
     }
 }

@@ -90,6 +90,7 @@ public class MusicPlayerFragment extends Fragment {
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
 
+        Log.d(LOG_TAG, LOG_TAG+" is onCreateView");
         // 参数传递过来表示放歌
         if (isPlayMusic == 1){
             bindMusicService();
@@ -137,12 +138,12 @@ public class MusicPlayerFragment extends Fragment {
 
     // 获取与 service 的连接
     private void defineServiceConnection() {
+        if (!HomeActivity.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()))
+            getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
         // 建立连接时开启了一个服务，并且返回了能够通信使用的Binder
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                if (!HomeActivity.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()))
-                    getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
                 mBinder = (FullScreenMusicPlayerServiceBinder) service;
                 mService = mBinder.getService(new SeekBarTextCallBack() {
                     @Override
@@ -210,12 +211,19 @@ public class MusicPlayerFragment extends Fragment {
         };
     }
 
-    // 当 fragment 隐藏不见时，可以解除绑定
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, LOG_TAG + " is onPause");
+        if (mConnection != null)
+            getActivity().unbindService(mConnection);
+        mBound = false;
+    }
+
     @Override
     public void onStop() {
         super.onStop();
-        getActivity().unbindService(mConnection);
-        mBound = false;
+        Log.d(LOG_TAG, LOG_TAG+" is onStop");
     }
 
     // 初始化页面的播放器按钮
@@ -266,7 +274,7 @@ public class MusicPlayerFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d(LOG_TAG, LOG_TAG + "is onDestroyView");
+        Log.d(LOG_TAG, LOG_TAG + " is onDestroyView");
     }
 
 }

@@ -18,7 +18,6 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
 import com.main.maybe.miplayer.R;
@@ -100,9 +99,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 // set music information
                 bmpBinder.setSongName(mNowPlaying.get(current_position).get(LoadingListTask.songName));
                 bmpBinder.setArtistName(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
-
-                // 将 getDuration 和 play 放在这里保证获取信息时加载完成
-                setSeekBarTracker(mMediaPlayer.getDuration());
                 play();
             }
         });
@@ -183,6 +179,18 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             return true;
         else
             return false;
+    }
+
+    public ArrayList<HashMap<String, String>> getPlayingQueue(){
+        return mNowPlaying;
+    }
+
+    public int getCurrentPosition(){
+        return current_position;
+    }
+
+    public void setCurrentPosition(int currentPosition){
+        this.current_position = currentPosition;
     }
 
     // 只负责绑定 player 界面
@@ -337,12 +345,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         switch (bindActivity){
             case FULLSCREEN_PLAYER_ACTIVITY:
                 if (seekBarChanger != null)
-                    seekBarChanger.cancel(false);
+                    seekBarChanger.cancel(true);
                 seekBarChanger = null;
         }
 
-        Toast.makeText(this, "Unbind with state:　"+((state == PLAYING) ? "PLAYING" : "PAUSED"),
-                Toast.LENGTH_SHORT).show();
+        Log.d(LOG_TAG, "Unbind with state:　" + ((state == PLAYING) ? "PLAYING" : "PAUSED" ));
         return true;
     }
 
@@ -381,6 +388,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
         // store the music list
         storeSerializableList();
+        Log.d(LOG_TAG, LOG_TAG+" is onDestroy");
         super.onDestroy();
     }
 
