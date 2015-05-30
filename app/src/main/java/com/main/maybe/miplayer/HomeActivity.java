@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.main.maybe.miplayer.adapter.HomeVPAdapter;
-import com.main.maybe.miplayer.binder.BottomMusicPlayerServiceBinder;
+import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
 
@@ -45,7 +45,7 @@ public class HomeActivity extends ActionBarActivity {
 
     MusicPlayerService mMusicPlayerService;
     ServiceConnection mServiceConnection;
-    BottomMusicPlayerServiceBinder bmpServiceBinder;
+    MusicPlayerServiceBinder mServiceBinder;
 
     private TextView musicSongName;
     private TextView musicArtistName;
@@ -181,8 +181,8 @@ public class HomeActivity extends ActionBarActivity {
         mServiceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                bmpServiceBinder = (BottomMusicPlayerServiceBinder)service;
-                mMusicPlayerService = bmpServiceBinder.getService(new BottomMusicPlayerCallBack() {
+                mServiceBinder = (MusicPlayerServiceBinder)service;
+                mMusicPlayerService = mServiceBinder.getService(new MusicPlayerServiceBinderCallBack() {
                     @Override
 
                     public void setImagePlay() {
@@ -197,15 +197,30 @@ public class HomeActivity extends ActionBarActivity {
                     }
 
                     @Override
-                    public void setSongName(String songName) {
-                        if (musicSongName != null)
-                            musicSongName.setText(songName);
+                    public void setMusicAlbum(String album) {
+
                     }
 
                     @Override
-                    public void setArtistName(String artistName) {
+                    public void setMusicArtist(String artist) {
                         if (musicArtistName != null)
-                            musicArtistName.setText(artistName);
+                            musicArtistName.setText(artist);
+                    }
+
+                    @Override
+                    public void setTotalTime(String time) {
+
+                    }
+
+                    @Override
+                    public void setCurrentTime(String time) {
+
+                    }
+
+                    @Override
+                    public void setMusicTitle(String title) {
+                        if (musicSongName != null)
+                            musicSongName.setText(title);
                     }
                 });
 
