@@ -17,6 +17,7 @@ import com.main.maybe.miplayer.SongInAlbumOrArtActivity;
 import com.main.maybe.miplayer.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
+import com.main.maybe.miplayer.fragment.MusicPlayerFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public static final String songList = "songList";
     public static final String playPosition = "playPosition";
 
-    public static final String isPlayMusic = "isPlayMusic"; // 1 play, 2 not play
+    public static final String ENTER_FSMUSIC_PLAYER_FROM_WHERE = "ENTER_FSMUSIC_PLAYER_FROM_WHERE";
 
     private ArrayList<HashMap<String, String>> items;
     private ListView lv;
@@ -74,7 +75,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                             Intent intent = new Intent(context, MusicPlayerActivity.class);
                             intent.putExtra(songList, items);
                             intent.putExtra(playPosition, position);
-                            intent.putExtra(isPlayMusic, 1);
+                            intent.putExtra(ENTER_FSMUSIC_PLAYER_FROM_WHERE, MusicPlayerFragment.FROM_CLICK_ITEM);
                             context.startActivity(intent);
                         }
                     });
@@ -174,7 +175,20 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                 item.put(songName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
-                item.put(duration, (second/60)+":"+(second%60));
+
+                int minute = second/60;
+                second = second%60;
+                String format_duration;
+                if (minute < 10 && second < 10)
+                    format_duration = "0" + minute + ":" + "0" + second;
+                else if (minute < 10 && second > 10)
+                    format_duration = "0" + minute + ":" + second;
+                else if (minute > 10 && second < 10)
+                    format_duration = minute + ":" + "0"+second;
+                else
+                    format_duration = minute + ":" + second;
+                item.put(duration, format_duration);
+
                 item.put(duration_t, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                 item.put(path, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                 songs.add(item);

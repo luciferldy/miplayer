@@ -25,21 +25,15 @@ public class MusicPlayerActivity extends ActionBarActivity {
         setContentView(R.layout.music_player_container);
         Intent intent = getIntent();
         songs = (ArrayList<HashMap<String, String>>)intent.getSerializableExtra(LoadingListTask.songList);
-        int isPlayMusic = intent.getIntExtra(LoadingListTask.isPlayMusic, 0);
         int position = intent.getIntExtra(LoadingListTask.playPosition, 0);
-
-        if (isPlayMusic == 0){
-            // wrong
-            return;
-        }
-
-        if (savedInstanceState == null && isPlayMusic!=0) {
+        int from_what = intent.getIntExtra(LoadingListTask.ENTER_FSMUSIC_PLAYER_FROM_WHERE, 0);
+        if (savedInstanceState == null && from_what != 0) {
 
             MusicPlayerFragment mpf = new MusicPlayerFragment();
             Bundle bundle = new Bundle();
             bundle.putSerializable(LoadingListTask.songList, songs);
             bundle.putInt(LoadingListTask.playPosition, position);
-            bundle.putInt(LoadingListTask.isPlayMusic, isPlayMusic);
+            bundle.putInt(LoadingListTask.ENTER_FSMUSIC_PLAYER_FROM_WHERE, from_what);
             mpf.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.music_player_container,mpf)
