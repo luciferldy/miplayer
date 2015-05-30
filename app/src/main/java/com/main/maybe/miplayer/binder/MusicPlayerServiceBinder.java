@@ -3,7 +3,7 @@ package com.main.maybe.miplayer.binder;
 import android.content.Context;
 import android.os.Binder;
 
-import com.main.maybe.miplayer.SeekBarTextCallBack;
+import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
 /**
@@ -12,14 +12,14 @@ import com.main.maybe.miplayer.service.MusicPlayerService;
 public class MusicPlayerServiceBinder extends Binder {
     MusicPlayerService mMusicPlayerService;
     Context mApplication;
-    SeekBarTextCallBack mSeekBarTextCallBack;
+    MusicPlayerServiceBinderCallBack mSeekBarTextCallBack;
 
     public MusicPlayerServiceBinder(MusicPlayerService musicPlayerService, Context application){
         mMusicPlayerService = musicPlayerService;
         mApplication = application;
     }
 
-    public MusicPlayerService getService(SeekBarTextCallBack seekBarTextCallBack){
+    public MusicPlayerService getService(MusicPlayerServiceBinderCallBack seekBarTextCallBack){
         mSeekBarTextCallBack = seekBarTextCallBack;
         return mMusicPlayerService;
     }
