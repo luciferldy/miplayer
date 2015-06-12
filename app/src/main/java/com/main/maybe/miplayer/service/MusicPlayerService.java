@@ -20,6 +20,7 @@ import android.widget.RemoteViews;
 import android.widget.SeekBar;
 
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
+import com.main.maybe.miplayer.NotificationBroadcastReceiver;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.task.LoadingListTask;
@@ -65,6 +66,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private OnCompletionListener mCompletionListener;
 
     private HeadPhoneBroadcastReceiver mHeadPhoneBroadcastReceiver;
+    private NotificationBroadcastReceiver mNotificationBroadcastReciver;
     private SeekBar mSeekBar;
 
     private AsyncTask<Integer, Void, Void> seekBarChanger;
@@ -285,8 +287,12 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         };
         mMediaPlayer.setOnCompletionListener(mCompletionListener);
 
+        // register the BroadcastReceiver
         mHeadPhoneBroadcastReceiver = new HeadPhoneBroadcastReceiver();
         registerReceiver(mHeadPhoneBroadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
+        mNotificationBroadcastReciver = new NotificationBroadcastReceiver();
+        registerReceiver(mNotificationBroadcastReciver, new IntentFilter(NotificationBroadcastReceiver.TYPE));
+
         mHeadPhoneBroadcastReceiver.registerMusicPlayerService(this);
         // bind the service
         bindMusicPlayer();
@@ -418,7 +424,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         Notification.Builder builder = new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentTitle("Playing")
-                .setAutoCancel(true);
+                .setAutoCancel(false);
         mNotification = builder.build();
         mNotification.bigContentView = getExpandView();
 
@@ -428,20 +434,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    // 这里应该注册广播去监听
-    public void handleNotificationIntent( Intent intent ){
-        if (intent != null && intent.getAction() != null){
-            if (intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_PLAY_PAUSE )){
-                changeState();
-            }
-            else if ( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_PREVIOUS )){
-                playPrevious();
-            }else if ( intent.getAction().equalsIgnoreCase( ACTION_NOTIFICATION_NEXT )){
-                playNext();
-            }
-        }
     }
 
     // 这是为了大屏的 Notification
@@ -469,15 +461,19 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
         Intent intent = new Intent(getApplicationContext(), MusicPlayerService.class);
 
-        intent.setAction(ACTION_NOTIFICATION_PLAY_PAUSE);
+        intent.setAction(NotificationBroadcastReceiver.NOTIFICATION_BROADCAST_RECEIVER);
+        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_PAUSE);
         PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_play, pendingIntent);
 
-        intent.setAction(ACTION_NOTIFICATION_PREVIOUS);
+
+        intent.removeExtra(NotificationBroadcastReceiver.TYPE);
+        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_PREVIOUS);
         pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pendingIntent);
 
-        intent.setAction(ACTION_NOTIFICATION_NEXT);
+        intent.removeExtra(NotificationBroadcastReceiver.TYPE);
+        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_NEXT);
         pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
         mRemoteViews.setOnClickPendingIntent(R.id.notification_next, pendingIntent);
 

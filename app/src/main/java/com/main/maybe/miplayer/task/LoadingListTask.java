@@ -252,4 +252,5 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
             return null;
         }
     }
+
 }
