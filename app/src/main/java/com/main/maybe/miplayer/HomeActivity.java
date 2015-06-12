@@ -16,11 +16,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.main.maybe.miplayer.adapter.HomeVPAdapter;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
+import com.main.maybe.miplayer.fragment.MusicPlayerFragment;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
 
@@ -51,6 +53,7 @@ public class HomeActivity extends ActionBarActivity {
     private TextView musicArtistName;
     private ImageButton btmPlayOrPause;
     private ImageButton btmPlayNext;
+    private RelativeLayout bottom_music_player;
 
     private boolean mBound = false;
     private int mState;
@@ -87,6 +90,20 @@ public class HomeActivity extends ActionBarActivity {
     }
 
     public void initBottomPlayer(){
+
+        bottom_music_player = (RelativeLayout)findViewById(R.id.bottom_music_show);
+        bottom_music_player.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 底部播放器，点击跳转
+                Intent intent = new Intent(HomeActivity.this, MusicPlayerActivity.class);
+                intent.putExtra(LoadingListTask.songList, songs);
+                intent.putExtra(LoadingListTask.playPosition, currentPosition);
+                intent.putExtra(LoadingListTask.ENTER_FSMUSIC_PLAYER_FROM_WHERE, MusicPlayerFragment.FROM_BOTTOM_MUSIC_PLAYER);
+                startActivity(intent);
+            }
+        });
+
         musicSongName = (TextView)findViewById(R.id.bottom_music_song_name);
         musicArtistName = (TextView)findViewById(R.id.bottom_music_artist);
         btmPlayOrPause = (ImageButton)findViewById(R.id.bottom_music_play);
