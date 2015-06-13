@@ -15,29 +15,39 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
     public static final String PLAY_PREVIOUS = "PLAY_PREVIOUS";
     public static final String PLAY_NEXT = "PLAY_NEXT";
     public static final String PLAY_PAUSE = "PLAY_PAUSE";
-    public static final String NOTIFICATION_BROADCAST_RECEIVER = "NOTIFICATION_BROADCAST_RECEIVER";
-    public static final String TYPE = "NotificationBroadcastReceiver";
+    public static final String PLAYER_CANCEL = "PLAYER_CANCEL";
     private MusicPlayerService musicPlayerService;
     private final String LOG_TAG = NotificationBroadcastReceiver.class.getSimpleName();
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String action = intent.getAction();
-        if (action == null || musicPlayerService == null)
+        String type = intent.getAction();
+        if (type == null){
+            Log.d(LOG_TAG, "action is null!");
             return;
-        String type = intent.getStringExtra(TYPE);
+        }
+        if (musicPlayerService == null){
+            Log.d(LOG_TAG, "music player service is null");
+            return;
+        }
+
         if (type.equals(PLAY_PREVIOUS))
             musicPlayerService.playPrevious();
         else if (type.equals(PLAY_NEXT))
             musicPlayerService.playNext();
         else if (type.equals(PLAY_PAUSE))
             musicPlayerService.changeState();
+        else if (type.equals(PLAYER_CANCEL)){
+            musicPlayerService.mNotificationManager.cancel(MusicPlayerService.PLAY_MUSIC_NOTIFICATION_ID);
+
+        }
         else
             Log.d(LOG_TAG, LOG_TAG+" get the wrong intent action");
     }
 
-    public void registMusicPlayerService(MusicPlayerService musicPlayerService){
+    public void registerMusicPlayerService(MusicPlayerService musicPlayerService){
         if (musicPlayerService != null)
             this.musicPlayerService = musicPlayerService;
     }
+
 }

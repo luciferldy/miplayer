@@ -4,7 +4,6 @@
     android:id="@+id/bottom_music_show"
     android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:background="@color/colorAccent"
     android:layout_alignParentBottom="true">
     <ImageView
         android:id="@+id/bottom_music_albumcover"
@@ -13,41 +12,50 @@
         android:scaleType="fitCenter"
         android:src="@drawable/album_cover"
         android:layout_marginRight="10dp"/>
-    <ImageButton
-        android:id="@+id/bottom_music_next"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:background="#00000000"
-        android:src="@drawable/ic_music_next"
-        android:scaleType="fitCenter"/>
-    <ImageButton
-        android:id="@+id/bottom_music_play"
-        android:layout_width="60dp"
-        android:layout_height="match_parent"
-        android:layout_toLeftOf="@id/bottom_music_next"
-        android:background="#00000000"
-        android:src="@drawable/song_play"
-        android:scaleType="fitCenter"/>
-    <LinearLayout
-        android:layout_width="wrap_content"
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_toRightOf="@id/bottom_music_albumcover"
-        android:layout_toLeftOf="@id/bottom_music_play"
-        android:orientation="vertical"
-        android:gravity="center_vertical">
-        <TextView
-            android:id="@+id/bottom_music_song_name"
-            android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:textSize="18sp"
-            android:text="21 Guns"/>
-        <TextView
-            android:id="@+id/bottom_music_artist"
-            android:layout_width="wrap_content"
-            android:layout_height="16dp"
-            android:textSize="10sp"
-            android:text="The Green Day"/>
+        android:background="@color/colorAccent">
 
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/bottom_music_next"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="#00000000"
+            android:src="@drawable/ic_music_next"
+            android:scaleType="fitCenter"/>
+        <ImageButton
+            android:id="@+id/bottom_music_play"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@id/bottom_music_next"
+            android:background="#00000000"
+            android:src="@drawable/song_play"
+            android:scaleType="fitCenter"/>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@id/bottom_music_play"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/bottom_music_song_name"
+                android:layout_width="wrap_content"
+                android:layout_height="24dp"
+                android:textSize="18sp"
+                android:text="21 Guns"/>
+            <TextView
+                android:id="@+id/bottom_music_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="16dp"
+                android:textSize="10sp"
+                android:text="The Green Day"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
 </RelativeLayout>

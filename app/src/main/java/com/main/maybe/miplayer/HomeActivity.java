@@ -253,6 +253,8 @@ public class HomeActivity extends ActionBarActivity {
 
                     if (mMusicPlayerService.getState() == MusicPlayerService.PLAYING)
                         btmPlayOrPause.setImageResource(R.drawable.song_pause);
+                    else
+                        btmPlayOrPause.setImageResource(R.drawable.song_play);
                 }
                 else if (FROMWHERE == FROM_LAUNCHER){
                     if (songs != null)
@@ -346,5 +348,13 @@ public class HomeActivity extends ActionBarActivity {
         }
         Log.d("isServiceWorked", "return false");
         return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mMusicPlayerService!=null)
+            stopService(new Intent(HomeActivity.this, MusicPlayerService.class));
+        Log.d(LOG_TAG, LOG_TAG+" is onDestroy!");
+        super.onDestroy();
     }
 }

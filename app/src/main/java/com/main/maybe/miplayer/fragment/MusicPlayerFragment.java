@@ -116,6 +116,8 @@ public class MusicPlayerFragment extends Fragment {
                 playArtist.setText(currentSong.get(LoadingListTask.artistName));
                 mCurrentTime.setText("00:00");
                 mTotalTime.setText(currentSong.get(LoadingListTask.duration));
+                mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
+                mSeekBar.setProgress(0);
                 return;
             }
         }
@@ -285,7 +287,7 @@ public class MusicPlayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (mService == null){
-                    defineServiceConnection();
+                    bindMusicService();
                     return;
                 }
                 if (mBound){
@@ -306,7 +308,7 @@ public class MusicPlayerFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (mService == null)
-                    defineServiceConnection();
+                    bindMusicService();
                 playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playPrevious();
             }
@@ -317,7 +319,7 @@ public class MusicPlayerFragment extends Fragment {
             public void onClick(View v) {
                 // set the icon play
                 if (mService == null)
-                    defineServiceConnection();
+                    bindMusicService();
                 playPausedButton.setImageResource(R.drawable.song_play);
                 mService.playNext();
             }

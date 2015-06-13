@@ -51,11 +51,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     public final static String PlayingNumber = "PlayingNumber"; // 播放的序号
 
-    private final static int PLAY_MUSIC_NOTIFICATION_ID = 1;
+    public final static int PLAY_MUSIC_NOTIFICATION_ID = 1;
 
-    public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
-    public static final String ACTION_NOTIFICATION_PREVIOUS = "action_notification_previous";
-    public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
+//    public static final String ACTION_NOTIFICATION_PLAY_PAUSE = "action_notification_play_pause";
+//    public static final String ACTION_NOTIFICATION_PREVIOUS = "action_notification_previous";
+//    public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
 
     private int state = PAUSED;
     private int current_position = 0;
@@ -66,7 +66,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private OnCompletionListener mCompletionListener;
 
     private HeadPhoneBroadcastReceiver mHeadPhoneBroadcastReceiver;
-    private NotificationBroadcastReceiver mNotificationBroadcastReciver;
+    private NotificationBroadcastReceiver mNotificationBroadcastReceiver;
     private SeekBar mSeekBar;
 
     private AsyncTask<Integer, Void, Void> seekBarChanger;
@@ -74,11 +74,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     private final String LOG_TAG = MusicPlayerService.class.getSimpleName();
 
     private Notification mNotification;
-    private NotificationManager mNotificationManager;
+    public NotificationManager mNotificationManager;
+    private Handler handler;
 
     @Override
     public void onCreate() {
         super.onCreate();
+        registerBroadcastReceiver();
         Log.d(LOG_TAG, LOG_TAG + " is onCreate");
     }
 
@@ -152,12 +154,12 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
      * true 有播放队列
      * false 没有播放队列
      */
-    public boolean hasPlayingQueue(){
-        if ( mNowPlaying != null && mNowPlaying.size() != 0 )
-            return true;
-        else
-            return false;
-    }
+//    public boolean hasPlayingQueue(){
+//        if ( mNowPlaying != null && mNowPlaying.size() != 0 )
+//            return true;
+//        else
+//            return false;
+//    }
 
     public ArrayList<HashMap<String, String>> getPlayingQueue(){
         return mNowPlaying;
@@ -167,12 +169,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         return current_position;
     }
 
-    public void setCurrentPosition(int currentPosition){
-        this.current_position = currentPosition;
-    }
-
-    // 只负责绑定 player 界面
-    private Handler handler;
+//    public void setCurrentPosition(int currentPosition){
+//        this.current_position = currentPosition;
+//    }
 
     public boolean storeSerializableList(){
         ArrayList<HashMap<String, String>> stores;
@@ -228,6 +227,24 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         }
     }
 
+    public boolean registerBroadcastReceiver(){
+
+        // register the BroadcastReceiver
+        mHeadPhoneBroadcastReceiver = new HeadPhoneBroadcastReceiver();
+        registerReceiver(mHeadPhoneBroadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
+        mHeadPhoneBroadcastReceiver.registerMusicPlayerService(this);
+
+        mNotificationBroadcastReceiver = new NotificationBroadcastReceiver();
+        IntentFilter musicIntentFilter = new IntentFilter();
+        musicIntentFilter.addAction(NotificationBroadcastReceiver.PLAY_PAUSE);
+        musicIntentFilter.addAction(NotificationBroadcastReceiver.PLAY_PREVIOUS);
+        musicIntentFilter.addAction(NotificationBroadcastReceiver.PLAY_NEXT);
+        musicIntentFilter.addAction(NotificationBroadcastReceiver.PLAYER_CANCEL);
+        registerReceiver(mNotificationBroadcastReceiver, musicIntentFilter);
+        mNotificationBroadcastReceiver.registerMusicPlayerService(MusicPlayerService.this);
+        return true;
+    }
+
     @Override
     public void removeMusicFromQueue(HashMap<String, String> music) {
         // it can remove object
@@ -249,6 +266,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         mMediaPlayer.start();
         if (mBinder != null)
             mBinder.setImagePaused();
+        showNotification();
     }
 
     @Override
@@ -257,6 +275,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         mMediaPlayer.pause();
         if (mBinder != null)
             mBinder.setImagePlay();
+        showNotification();
     }
 
     public int changeState(){
@@ -287,14 +306,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         };
         mMediaPlayer.setOnCompletionListener(mCompletionListener);
 
-        // register the BroadcastReceiver
-        mHeadPhoneBroadcastReceiver = new HeadPhoneBroadcastReceiver();
-        registerReceiver(mHeadPhoneBroadcastReceiver, new IntentFilter(Intent.ACTION_HEADSET_PLUG));
-        mNotificationBroadcastReciver = new NotificationBroadcastReceiver();
-        registerReceiver(mNotificationBroadcastReciver, new IntentFilter(NotificationBroadcastReceiver.TYPE));
-
-        mHeadPhoneBroadcastReceiver.registerMusicPlayerService(this);
-        // bind the service
+        // bind the music service
         bindMusicPlayer();
 
         // 当正在有音乐播放时
@@ -350,8 +362,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
         if (mHeadPhoneBroadcastReceiver != null)
             unregisterReceiver(mHeadPhoneBroadcastReceiver);
+        if (mNotificationBroadcastReceiver != null)
+            unregisterReceiver(mNotificationBroadcastReceiver);
         // store the music list
         storeSerializableList();
+        mNotificationManager.cancel(PLAY_MUSIC_NOTIFICATION_ID);
         Log.d(LOG_TAG, LOG_TAG+" is onDestroy");
         super.onDestroy();
     }
@@ -359,7 +374,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     // play music selected
     public synchronized void playFetched(String path) {
         playSetting(path);
-        showNotification();
     }
 
     public void playSetting(String path){
@@ -427,7 +441,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 .setAutoCancel(false);
         mNotification = builder.build();
         mNotification.bigContentView = getExpandView();
-
+        mNotification.flags = Notification.FLAG_NO_CLEAR;
         mNotificationManager.notify(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
     }
 
@@ -459,23 +473,22 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
         }
 
-        Intent intent = new Intent(getApplicationContext(), MusicPlayerService.class);
-
-        intent.setAction(NotificationBroadcastReceiver.NOTIFICATION_BROADCAST_RECEIVER);
-        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_PAUSE);
-        PendingIntent pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_play, pendingIntent);
+        Intent playIntent = new Intent(NotificationBroadcastReceiver.PLAY_PAUSE);
+        PendingIntent pIntentPlay = PendingIntent.getBroadcast(getApplicationContext(), 0, playIntent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_play, pIntentPlay);
 
 
-        intent.removeExtra(NotificationBroadcastReceiver.TYPE);
-        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_PREVIOUS);
-        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pendingIntent);
+        Intent previousIntent = new Intent(NotificationBroadcastReceiver.PLAY_PREVIOUS);
+        PendingIntent pIntentPrevious = PendingIntent.getBroadcast(getApplicationContext(), 0, previousIntent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pIntentPrevious);
 
-        intent.removeExtra(NotificationBroadcastReceiver.TYPE);
-        intent.putExtra(NotificationBroadcastReceiver.TYPE, NotificationBroadcastReceiver.PLAY_NEXT);
-        pendingIntent = PendingIntent.getService(getApplicationContext(), 1, intent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_next, pendingIntent);
+        Intent nextIntent = new Intent(NotificationBroadcastReceiver.PLAY_NEXT);
+        PendingIntent pIntentNext = PendingIntent.getBroadcast(getApplicationContext(), 0, nextIntent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_next, pIntentNext);
+
+        Intent cancelIntent = new Intent(NotificationBroadcastReceiver.PLAYER_CANCEL);
+        PendingIntent pIntentCancel = PendingIntent.getBroadcast(getApplicationContext(), 0, cancelIntent, 0);
+        mRemoteViews.setOnClickPendingIntent(R.id.notification_cancel, pIntentCancel);
 
         return mRemoteViews;
     }
