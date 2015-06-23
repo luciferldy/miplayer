@@ -39,7 +39,6 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
             musicPlayerService.changeState();
         else if (type.equals(PLAYER_CANCEL)){
             musicPlayerService.mNotificationManager.cancel(MusicPlayerService.PLAY_MUSIC_NOTIFICATION_ID);
-
         }
         else
             Log.d(LOG_TAG, LOG_TAG+" get the wrong intent action");

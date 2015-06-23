@@ -25,7 +25,6 @@
         </activity>
 
         <activity android:name=".SongInAlbumOrArtActivity">
-
         </activity>
 
         <service android:name=".service.MusicPlayerService"></service>
