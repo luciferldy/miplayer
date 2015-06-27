@@ -31,7 +31,7 @@ public class AlbumCoverHelper {
     public static Bitmap getDefaultArtwork(Context context,boolean small) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.RGB_565;
-        if(small){  //返回小图片
+        if(small) {  //返回小图片
             return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
         }
         return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
@@ -41,27 +41,28 @@ public class AlbumCoverHelper {
     /**
      * 从文件当中获取专辑封面位图
      * @param context
-     * @param songid
-     * @param albumid
+     * @param song_id
+     * @param album_id
      * @return
      */
-    private static Bitmap getArtworkFromFile(Context context, long songid, long albumid){
+    private static Bitmap getArtworkFromFile(Context context, long song_id, long album_id){
         Bitmap bm = null;
-        if(albumid < 0 && songid < 0) {
+
+        if(album_id < 0 && song_id < 0) {
             throw new IllegalArgumentException("Must specify an album or a song id");
         }
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             FileDescriptor fd = null;
-            if(albumid < 0){
+            if(album_id < 0){
                 Uri uri = Uri.parse("content://media/external/audio/media/"
-                        + songid + "/albumart");
+                        + song_id + "/albumart");
                 ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
                 if(pfd != null) {
                     fd = pfd.getFileDescriptor();
                 }
             } else {
-                Uri uri = ContentUris.withAppendedId(albumArtUri, albumid);
+                Uri uri = ContentUris.withAppendedId(albumArtUri, album_id);
                 ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
                 if(pfd != null) {
                     fd = pfd.getFileDescriptor();

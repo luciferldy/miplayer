@@ -41,6 +41,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public static final String songNumber = "songNumber";
 
     public static final String albumId = "albumId";
+    public static final String albumArt = "albumArt";
 
     public static final String songList = "songList";
     public static final String playPosition = "playPosition";
@@ -175,6 +176,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                 item.put(songName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
+                item.put(albumId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
 
                 int minute = second/60;
                 second = second%60;
@@ -219,6 +221,8 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                 item.put(albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)));
                 item.put(songNumber, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
+                item.put(albumArt, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)));
+
                 albums.add(item);
             }
             return albums;
@@ -239,7 +243,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
             while (cursor.moveToNext()){
                 item = new HashMap<>();
 
-//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
+//                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)))
 
                 item.put(artistId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
                 item.put(artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));

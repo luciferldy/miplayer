@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -54,6 +55,7 @@ public class HomeActivity extends ActionBarActivity {
     private ImageButton btmPlayOrPause;
     private ImageButton btmPlayNext;
     private RelativeLayout bottom_music_player;
+    private ImageView bottom_album_cover;
 
     private boolean mBound = false;
     private int mState;
@@ -108,6 +110,7 @@ public class HomeActivity extends ActionBarActivity {
         musicArtistName = (TextView)findViewById(R.id.bottom_music_artist);
         btmPlayOrPause = (ImageButton)findViewById(R.id.bottom_music_play);
         btmPlayNext = (ImageButton)findViewById(R.id.bottom_music_next);
+        bottom_album_cover = (ImageView)findViewById(R.id.bottom_music_albumcover);
 
         btmPlayOrPause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,6 +181,11 @@ public class HomeActivity extends ActionBarActivity {
         }else {
             musicSongName.setText(currentSong.get(LoadingListTask.songName));
             musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
+
+            int songId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
+            int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
+
+            bottom_album_cover.setImageBitmap(AlbumCoverHelper.getArtwork(getApplication(), songId, albumId, true, true));
         }
     }
 
