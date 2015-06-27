@@ -117,10 +117,17 @@
             android:src="@drawable/ic_music_next"
             android:background="#00000000"/>
     </RelativeLayout>
-    <TextView
-        android:id="@+id/play_lyric"
+    <RelativeLayout
+        android:id="@+id/play_contain_lyric"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/play_messagetitle"
-        android:layout_above="@id/play_messageoperation"/>
+        android:layout_above="@id/play_messageoperation">
+        <TextView
+            android:id="@+id/play_lyric"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+
+    </RelativeLayout>
+
 </RelativeLayout>

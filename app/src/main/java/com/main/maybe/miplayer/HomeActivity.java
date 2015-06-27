@@ -222,6 +222,12 @@ public class HomeActivity extends ActionBarActivity {
                     }
 
                     @Override
+                    public void setAlbumCover(int songId, int albumId) {
+                        if (bottom_album_cover != null)
+                            AlbumCoverHelper.getArtwork(getApplicationContext(), songId, albumId, true, true);
+                    }
+
+                    @Override
                     public void setMusicAlbum(String album) {
 
                     }

@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -16,9 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.main.maybe.miplayer.AlbumCoverHelper;
 import com.main.maybe.miplayer.HomeActivity;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
@@ -44,6 +47,8 @@ public class MusicPlayerFragment extends Fragment {
     private TextView playTitle;
     private TextView playAlbum;
     private TextView playArtist;
+    private RelativeLayout playContainLyric;
+
 
     private MusicPlayerService mService;
     private MusicPlayerServiceBinder mBinder;
@@ -95,6 +100,7 @@ public class MusicPlayerFragment extends Fragment {
 
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
+        playContainLyric = (RelativeLayout) rootView.findViewById(R.id.play_contain_lyric);
 
         Log.d(LOG_TAG, LOG_TAG + " is onCreateView");
 
@@ -114,6 +120,10 @@ public class MusicPlayerFragment extends Fragment {
                 playTitle.setText(currentSong.get(LoadingListTask.songName));
                 playAlbum.setText(currentSong.get(LoadingListTask.albumName));
                 playArtist.setText(currentSong.get(LoadingListTask.artistName));
+                int userId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
+                int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
+                playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), userId, albumId, true, false)));
+
                 mCurrentTime.setText("00:00");
                 mTotalTime.setText(currentSong.get(LoadingListTask.duration));
                 mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
@@ -179,6 +189,12 @@ public class MusicPlayerFragment extends Fragment {
                     }
 
                     @Override
+                    public void setAlbumCover(int songId, int albumId) {
+                        if (playContainLyric != null)
+                            playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false)));
+                    }
+
+                    @Override
                     public void setTotalTime(String time) {
                         if (mTotalTime != null)
                             mTotalTime.setText(time);
@@ -239,6 +255,11 @@ public class MusicPlayerFragment extends Fragment {
                     playAlbum.setText(currentSong.get(LoadingListTask.albumName));
                     playArtist.setText(currentSong.get(LoadingListTask.artistName));
                     mTotalTime.setText(currentSong.get(LoadingListTask.duration));
+                    int songId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
+                    int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
+                    playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false)));
+
+                    mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
                     mService.setSeekBarTracker(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
                     // judge if music is playing
                     if (state == MusicPlayerService.PLAYING)
@@ -274,6 +295,7 @@ public class MusicPlayerFragment extends Fragment {
         if (mConnection != null)
             getActivity().unbindService(mConnection);
         mBound = false;
+        SERVICE_LAUNCH_MODE = 0;
     }
 
     @Override

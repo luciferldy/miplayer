@@ -140,6 +140,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 mBinder.setMusicAlbum(mNowPlaying.get(current_position).get(LoadingListTask.albumName));
                 mBinder.setMusicArtist(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
 
+                int songId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.songId));
+                int albumId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.albumId));
+                mBinder.setAlbumCover(songId, albumId);
+
+
                 // 将 getDuration 和 play 放在这里保证获取信息时加载完成
                 if (mSeekBar != null)
                     setSeekBarTracker(mMediaPlayer.getDuration());

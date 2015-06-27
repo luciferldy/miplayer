@@ -39,6 +39,11 @@ public class MusicPlayerServiceBinder extends Binder {
             mSeekBarTextCallBack.setMusicTitle(title);
     }
 
+    public void setAlbumCover(int songId, int albumId){
+        if (mApplication != null && mSeekBarTextCallBack != null)
+            mSeekBarTextCallBack.setAlbumCover(songId, albumId);
+    }
+
     public void setMusicAlbum(String album){
         if (mApplication != null && mSeekBarTextCallBack != null)
             mSeekBarTextCallBack.setMusicAlbum(album);

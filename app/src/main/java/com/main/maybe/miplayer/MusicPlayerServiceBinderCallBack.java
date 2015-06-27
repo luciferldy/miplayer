@@ -4,11 +4,12 @@ package com.main.maybe.miplayer;
  * Created by Maybe霏 on 2015/3/4.
  */
 public interface MusicPlayerServiceBinderCallBack {
-    public void setCurrentTime(String time);
-    public void setTotalTime(String time);
-    public void setMusicTitle(String title);
-    public void setMusicArtist(String artist);
-    public void setMusicAlbum(String album);
-    public void setImagePlay();
-    public void setImagePaused();
+    void setCurrentTime(String time);
+    void setTotalTime(String time);
+    void setMusicTitle(String title);
+    void setMusicArtist(String artist);
+    void setMusicAlbum(String album);
+    void setAlbumCover(int songId, int albumId);
+    void setImagePlay();
+    void setImagePaused();
 }
