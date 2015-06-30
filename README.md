@@ -26,6 +26,10 @@
 支持
 ----
 
+ViewPager切换的部分使用[PagerSlidingTabStrip](https://github.com/astuetz/PagerSlidingTabStrip)
+
+获取专辑封面部分代码采用网络上的一篇博客上面的代码[http://blog.csdn.net/wwj_748/article/details/9237561](http://blog.csdn.net/wwj_748/article/details/9237561)
+
 如果发现我的项目有什么不足或者可以改进的地方，请给我提意见
 [https://github.com/MaybeMercy/miplayer/issues](https://github.com/MaybeMercy/miplayer/issues)
 
