@@ -76,6 +76,7 @@ public class HomeFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        swipeRefreshLayout.setEnabled(false);
         ListView songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
 
         // start async task
@@ -87,6 +88,7 @@ public class HomeFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        swipeRefreshLayout.setEnabled(false);
         ListView artistList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
         (new LoadingListTask(1, getActivity(), artistList, inflater)).execute();
 
@@ -97,6 +99,7 @@ public class HomeFragment extends Fragment {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        swipeRefreshLayout.setEnabled(false);
         ListView albumList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
         (new LoadingListTask(2, getActivity(), albumList, inflater)).execute();
         return linearLayout;
@@ -105,6 +108,8 @@ public class HomeFragment extends Fragment {
     public LinearLayout initList(){
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
+        SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        swipeRefreshLayout.setEnabled(false);
         return linearLayout;
     }
 }
