@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -17,14 +16,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.AlbumCoverHelper;
 import com.main.maybe.miplayer.HomeActivity;
-import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
+import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
@@ -48,6 +48,7 @@ public class MusicPlayerFragment extends Fragment {
     private TextView playAlbum;
     private TextView playArtist;
     private RelativeLayout playContainLyric;
+    private ImageView playAlbumCover;
 
 
     private MusicPlayerService mService;
@@ -100,8 +101,7 @@ public class MusicPlayerFragment extends Fragment {
 
         mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
         mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
-        playContainLyric = (RelativeLayout) rootView.findViewById(R.id.play_contain_lyric);
-
+        playAlbumCover = (ImageView)rootView.findViewById(R.id.play_album_cover);
         Log.d(LOG_TAG, LOG_TAG + " is onCreateView");
 
         initFullScreenMusicPlayer();
@@ -122,8 +122,7 @@ public class MusicPlayerFragment extends Fragment {
                 playArtist.setText(currentSong.get(LoadingListTask.artistName));
                 int userId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
                 int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
-                playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), userId, albumId, true, false)));
-
+                playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), userId, albumId, true, false));
                 mCurrentTime.setText("00:00");
                 mTotalTime.setText(currentSong.get(LoadingListTask.duration));
                 mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
@@ -190,8 +189,8 @@ public class MusicPlayerFragment extends Fragment {
 
                     @Override
                     public void setAlbumCover(int songId, int albumId) {
-                        if (playContainLyric != null)
-                            playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false)));
+                        if (playAlbumCover != null)
+                            playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false));
                     }
 
                     @Override
@@ -257,8 +256,7 @@ public class MusicPlayerFragment extends Fragment {
                     mTotalTime.setText(currentSong.get(LoadingListTask.duration));
                     int songId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
                     int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
-                    playContainLyric.setBackground(new BitmapDrawable(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false)));
-
+                    playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false));
                     mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
                     mService.setSeekBarTracker(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
                     // judge if music is playing

@@ -117,17 +117,26 @@
             android:src="@drawable/ic_music_next"
             android:background="#00000000"/>
     </RelativeLayout>
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/play_contain_lyric"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_below="@id/play_messagetitle"
         android:layout_above="@id/play_messageoperation">
+        <ImageView
+            android:id="@+id/play_album_cover"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/album_cover"
+            />
         <TextView
             android:id="@+id/play_lyric"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text=""/>
 
-    </RelativeLayout>
+    </FrameLayout>
 
 </RelativeLayout>

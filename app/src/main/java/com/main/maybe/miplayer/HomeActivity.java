@@ -177,6 +177,7 @@ public class HomeActivity extends ActionBarActivity {
         if (currentSong == null){
             btmPlayOrPause.setClickable(false);
             btmPlayNext.setClickable(false);
+            bottom_music_player.setClickable(false);
             return;
         }else {
             musicSongName.setText(currentSong.get(LoadingListTask.songName));
@@ -265,6 +266,7 @@ public class HomeActivity extends ActionBarActivity {
                     musicSongName.setText(currentSong.get(LoadingListTask.songName));
                     musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
 
+                    Log.d(LOG_TAG, LOG_TAG + " from music service");
                     if (mMusicPlayerService.getState() == MusicPlayerService.PLAYING)
                         btmPlayOrPause.setImageResource(R.drawable.song_pause);
                     else
@@ -274,6 +276,7 @@ public class HomeActivity extends ActionBarActivity {
                     if (songs != null)
                         mMusicPlayerService.addMusicToQueue(songs);
                     mMusicPlayerService.play(currentPosition);
+                    Log.d(LOG_TAG, LOG_TAG + " from launcher");
                 }else {
                     Log.d(LOG_TAG, LOG_TAG+" find error FROMWHERE");
                 }
@@ -309,6 +312,7 @@ public class HomeActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         songs = null;
+        currentSong = null;
     }
 
     @Override
