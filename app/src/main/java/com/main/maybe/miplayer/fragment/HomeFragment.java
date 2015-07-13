@@ -1,5 +1,6 @@
 package com.main.maybe.miplayer.fragment;
 
+import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import com.main.maybe.miplayer.task.LoadingListTask;
 public class HomeFragment extends Fragment {
     private static final String ARG_POSITION = "position";
     private int position;
+    private FragmentManager manager;
 
     private final String LOG_TAG = HomeFragment.class.getSimpleName();
 
@@ -78,7 +80,6 @@ public class HomeFragment extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         swipeRefreshLayout.setEnabled(false);
         ListView songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
-
         // start async task
         (new LoadingListTask(0, getActivity(), songList, inflater)).execute();
         return linearLayout;

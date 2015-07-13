@@ -40,6 +40,7 @@ public class SongInAlbumOrArtFragment extends Fragment {
         // return super.onCreateView(inflater, container, savedInstanceState);
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
+        swipeRefreshLayout.setEnabled(false);
         Log.d(LOG_TAG, "onCreateView swipe refresh layout");
         songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
         Log.d(LOG_TAG, "onCreateView songList");
@@ -146,5 +147,4 @@ public class SongInAlbumOrArtFragment extends Fragment {
             return null;
         }
     }
-
 }

@@ -93,6 +93,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                             intent.putExtra("type", "artist");
                             intent.putExtra(LoadingListTask.artistId, Id);
                             context.startActivity(intent);
+
                         }
                     });
                     break;

@@ -80,6 +80,8 @@ public class HomeActivity extends ActionBarActivity {
     public void initPaper(){
         mainTabs = (PagerSlidingTabStrip)findViewById(R.id.main_tabs);
         mainTabs.setShouldExpand(true);
+        mainTabs.setIndicatorColorResource(R.color.colorPrimary);
+
         mainPagers = (ViewPager)findViewById(R.id.main_pager);
         mainPagerAdapter = new HomeVPAdapter(getSupportFragmentManager());
 
@@ -87,8 +89,6 @@ public class HomeActivity extends ActionBarActivity {
         int pageMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, getResources().getDisplayMetrics());
         mainPagers.setPageMargin(pageMargin);
         mainTabs.setViewPager(mainPagers);
-
-        mainTabs.setIndicatorColor(getResources().getColor(R.color.background_floating_material_light));
     }
 
     public void initBottomPlayer(){
@@ -346,8 +346,8 @@ public class HomeActivity extends ActionBarActivity {
     }
 
     /*
-         * 当 activity 隐藏时，解除绑定
-         */
+     * 当 activity 隐藏时，解除绑定
+     */
     @Override
     protected void onStop() {
         super.onStop();

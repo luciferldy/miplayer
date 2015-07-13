@@ -25,6 +25,7 @@ public class SongInAlbumOrArtActivity extends ActionBarActivity {
         setContentView(R.layout.song_from_album_or_art);
         Intent intent = getIntent();
         String type = intent.getStringExtra("type");
+
         Bundle b = new Bundle();
         b.putString("type", type);
         int i;
@@ -52,4 +53,10 @@ public class SongInAlbumOrArtActivity extends ActionBarActivity {
         ft.commit();
         Log.d(LOG_TAG, "ft commit");
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
 }

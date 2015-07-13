@@ -7,7 +7,7 @@
         android:id="@+id/main_tabs"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="55dp"
         android:fillViewport="false">
     </com.astuetz.PagerSlidingTabStrip>
     <android.support.v4.view.ViewPager
@@ -15,6 +15,7 @@
         android:layout_below="@id/main_tabs"
         android:layout_above="@id/bottom_music_show"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#DDDDDD">
     </android.support.v4.view.ViewPager>
 </RelativeLayout>
