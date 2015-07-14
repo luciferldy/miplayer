@@ -131,8 +131,7 @@ public class SongInAlbumOrArtFragment extends Fragment {
 //                Log.d(TAG_MSG, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
 
                 second = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION))) / 1000;
-
-
+                song.put(LoadingListTask.albumId, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
                 song.put(LoadingListTask.songName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
                 song.put(LoadingListTask.artistName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                 song.put(LoadingListTask.albumName, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));

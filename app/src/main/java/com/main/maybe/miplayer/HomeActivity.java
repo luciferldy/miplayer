@@ -67,6 +67,10 @@ public class HomeActivity extends ActionBarActivity {
         // getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         // maybe mean nothing
         setContentView(R.layout.home);
+
+//        File file = new File(MusicPlayerService.pathName+MusicPlayerService.fileName);
+//        if (file.exists())
+//            file.delete();
         initPaper();
     }
 
@@ -183,6 +187,7 @@ public class HomeActivity extends ActionBarActivity {
             musicSongName.setText(currentSong.get(LoadingListTask.songName));
             musicArtistName.setText(currentSong.get(LoadingListTask.artistName));
 
+            Log.d(LOG_TAG, "song number in file" + songs.size());
             int songId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
             int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
 

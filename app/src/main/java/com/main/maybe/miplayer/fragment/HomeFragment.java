@@ -1,6 +1,5 @@
 package com.main.maybe.miplayer.fragment;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,9 +22,6 @@ import com.main.maybe.miplayer.task.LoadingListTask;
 public class HomeFragment extends Fragment {
     private static final String ARG_POSITION = "position";
     private int position;
-    private FragmentManager manager;
-
-    private final String LOG_TAG = HomeFragment.class.getSimpleName();
 
     public static HomeFragment newInstance(int position){
         HomeFragment f = new HomeFragment();
@@ -81,7 +77,7 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout.setEnabled(false);
         ListView songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
         // start async task
-        (new LoadingListTask(0, getActivity(), songList, inflater)).execute();
+        (new LoadingListTask(0, getActivity(), songList, inflater, getFragmentManager())).execute();
         return linearLayout;
     }
 
@@ -91,7 +87,7 @@ public class HomeFragment extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         swipeRefreshLayout.setEnabled(false);
         ListView artistList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
-        (new LoadingListTask(1, getActivity(), artistList, inflater)).execute();
+        (new LoadingListTask(1, getActivity(), artistList, inflater, getFragmentManager())).execute();
 
         return linearLayout;
     }
@@ -102,7 +98,7 @@ public class HomeFragment extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         swipeRefreshLayout.setEnabled(false);
         ListView albumList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
-        (new LoadingListTask(2, getActivity(), albumList, inflater)).execute();
+        (new LoadingListTask(2, getActivity(), albumList, inflater, getFragmentManager())).execute();
         return linearLayout;
     }
 

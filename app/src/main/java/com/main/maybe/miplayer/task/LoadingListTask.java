@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -51,14 +52,15 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     private ArrayList<HashMap<String, String>> items;
     private ListView lv;
     private LayoutInflater mInflater;
-
+    private FragmentManager fmanager;
     private String LOG_TAG = LoadingListTask.class.getSimpleName();
 
-    public LoadingListTask(int type, Context context, ListView lv, LayoutInflater mInflater){
+    public LoadingListTask(int type, Context context, ListView lv, LayoutInflater mInflater, FragmentManager fmanager){
         this.type = type;
         this.context = context;
         this.lv = lv;
         this.mInflater = mInflater;
+        this.fmanager = fmanager;
     }
 
     @Override
@@ -94,6 +96,19 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                             intent.putExtra(LoadingListTask.artistId, Id);
                             context.startActivity(intent);
 
+                            // change the fragment
+//                            Bundle  b = new Bundle();
+//                            b.putString("type", "artist");
+//                            b.putInt(LoadingListTask.artistId, Id);
+//
+//                            SongInAlbumOrArtFragment sia = new SongInAlbumOrArtFragment();
+//                            FragmentTransaction ft = fmanager.beginTransaction();
+//                            ft.add(sia, null);
+//                            sia.setArguments(b);
+//                            ft.addToBackStack(null);
+//                            Log.d(LOG_TAG, "artist item click before commit");
+//                            ft.commit();
+//                            Log.d(LOG_TAG, "artist item click and commit");
                         }
                     });
                     break;
