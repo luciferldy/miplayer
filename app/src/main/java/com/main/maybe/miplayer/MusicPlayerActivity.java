@@ -47,4 +47,6 @@ public class MusicPlayerActivity extends ActionBarActivity {
         super.onDestroy();
         Log.d(LOG_TAG, LOG_TAG+" is onDestroy");
     }
+
+
 }
