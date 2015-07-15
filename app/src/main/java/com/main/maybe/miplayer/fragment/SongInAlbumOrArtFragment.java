@@ -38,6 +38,8 @@ public class SongInAlbumOrArtFragment extends Fragment {
     private ListView songList;
     private final String LOG_TAG = SongInAlbumOrArtFragment.class.getSimpleName();
     private String type;
+    private int id;
+    private LayoutInflater inflater;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,12 +48,12 @@ public class SongInAlbumOrArtFragment extends Fragment {
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         swipeRefreshLayout.setEnabled(false);
         Log.d(LOG_TAG, "onCreateView swipe refresh layout");
+        this.inflater = inflater;
         songList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
         Log.d(LOG_TAG, "onCreateView songList");
         // get the bundle
         Bundle bundle = getArguments();
         type = bundle.getString("type");
-        int id;
         if (type.equals("album")){
             id = bundle.getInt(LoadingListTask.albumId);
         }else if (type.equals("artist")){
@@ -64,8 +66,14 @@ public class SongInAlbumOrArtFragment extends Fragment {
             return linearLayout;
         }
         // start the async task
-        (new GetSongsInAlbumTask(inflater)).execute(id);
+
         return linearLayout;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        (new GetSongsInAlbumTask(inflater)).execute(id);
     }
 
     // async task to get inflate the ListView items
