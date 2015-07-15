@@ -4,20 +4,14 @@
     android:layout_height="wrap_content"
     android:padding="6dp"
     android:orientation="vertical">
-
     <TextView
         android:id="@+id/mylist_name"
         android:layout_width="wrap_content"
         android:layout_height="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:text="我喜欢的歌"/>
-    <TextView
-        android:id="@+id/mylist_song_number"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginTop="3dp"
-        android:textSize="13sp"
-        android:text="16首"/>
+        android:text="正在播放列表"/>
 </LinearLayout>

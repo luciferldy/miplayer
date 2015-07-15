@@ -21,8 +21,12 @@ import android.widget.Toast;
 import com.main.maybe.miplayer.MusicPlayerActivity;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.adapter.SongListAdapter;
+import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
+import com.main.maybe.miplayer.util.CommonUtils;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -52,7 +56,9 @@ public class SongInAlbumOrArtFragment extends Fragment {
             id = bundle.getInt(LoadingListTask.albumId);
         }else if (type.equals("artist")){
             id = bundle.getInt(LoadingListTask.artistId);
-        }else {
+        }else if (type.equals("self_list")){
+            id = CommonUtils.SELF_LIST_ID; // specific id
+        }else{
             // wrong
             Toast.makeText(getActivity().getApplicationContext(), "type wrong!", Toast.LENGTH_SHORT).show();
             return linearLayout;
@@ -67,14 +73,16 @@ public class SongInAlbumOrArtFragment extends Fragment {
 
         private ArrayList<HashMap<String, String>> songs = new ArrayList<>();
         private LayoutInflater inflater;
-
         public GetSongsInAlbumTask(LayoutInflater inflater){
             this.inflater = inflater;
         }
 
         @Override
         protected Boolean doInBackground(Integer... params) {
-            songs = getSongsInAlbumFromP(params[0]);
+            if (type.equals("self_list"))
+                songs = parseSerializableList();
+            else
+                songs = getSongsInAlbumFromP(params[0]);
             if (songs == null)
                 return false;
             else
@@ -145,5 +153,23 @@ public class SongInAlbumOrArtFragment extends Fragment {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public ArrayList<HashMap<String, String>> parseSerializableList(){
+        try {
+            ArrayList<HashMap<String, String>> songs;
+            FileInputStream fis = new FileInputStream(MusicPlayerService.pathName+MusicPlayerService.fileName);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            // songs 最初列表包含了当前播放的位置
+            songs = (ArrayList<HashMap<String, String>>)ois.readObject();
+
+            // remove the flag at the end
+            songs.remove(songs.size()-1);
+            return songs;
+        }catch (Exception e){
+            Log.d(LOG_TAG, "ois.readObject got problems");
+            e.printStackTrace();
+        }
+        return null;
     }
 }

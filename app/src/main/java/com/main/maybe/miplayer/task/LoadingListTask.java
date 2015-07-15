@@ -10,10 +10,12 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.main.maybe.miplayer.MusicPlayerActivity;
+import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.SongInAlbumOrArtActivity;
 import com.main.maybe.miplayer.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.adapter.ArtistListAdapter;
@@ -128,6 +130,22 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                         }
                     });
                     break;
+                case 3:
+                    ArrayList<String> list_name = new ArrayList<>();
+                    list_name.add("正在播放列表");
+                    lv.setAdapter(new ArrayAdapter<>(
+                            context, R.layout.mylistitem, R.id.mylist_name, list_name
+                    ));
+                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            // transfer the current queue
+                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
+                            intent.putExtra("type", "self_list");
+                            context.startActivity(intent);
+                        }
+                    });
+                    break;
             }
         }else {
             // notice that something wrong
@@ -161,6 +179,8 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
                 break;
             case 2:
                 items = getAlbumFromProvider();
+                break;
+            default:
                 break;
         }
         if (items==null)

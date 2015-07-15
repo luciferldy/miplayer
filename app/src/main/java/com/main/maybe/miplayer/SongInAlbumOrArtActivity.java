@@ -74,13 +74,15 @@ public class SongInAlbumOrArtActivity extends ActionBarActivity {
         }else if (type.equals("album")){
             i = intent.getIntExtra(LoadingListTask.albumId, -1);
             b.putInt(LoadingListTask.albumId, i);
+        }else if (type.equals("self_list")){
+            i = 0; // 不需要获取id
         }else{
             // wrong
             i = -1;
         }
         // if albumId == -1 wrong
         if (i == -1){
-            Toast.makeText(getApplicationContext(), "Album is wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "the argument through activities is wrong", Toast.LENGTH_SHORT).show();
             return;
         }
         Fragment sia = new SongInAlbumOrArtFragment();

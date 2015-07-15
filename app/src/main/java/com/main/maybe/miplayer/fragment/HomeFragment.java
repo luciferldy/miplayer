@@ -107,6 +107,8 @@ public class HomeFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout)inflater.inflate(R.layout.play_list, null);
         SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout)linearLayout.getChildAt(0);
         swipeRefreshLayout.setEnabled(false);
+        ListView selfList = (ListView)swipeRefreshLayout.findViewById(R.id.play_list);
+        (new LoadingListTask(3, getActivity(), selfList, inflater, getFragmentManager())).execute();
         return linearLayout;
     }
 }

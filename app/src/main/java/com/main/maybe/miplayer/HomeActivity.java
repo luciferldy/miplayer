@@ -200,7 +200,6 @@ public class HomeActivity extends ActionBarActivity {
         bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
 
-
     private void defineServiceConnection(){
 
         // 当后台没有服务时，需要启动
