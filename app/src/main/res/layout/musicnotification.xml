@@ -16,6 +16,7 @@
         android:layout_toRightOf="@id/notification_albumcover"
         android:layout_width="fill_parent"
         android:layout_height="90dp"
+        android:paddingTop="4dp"
         android:layout_marginLeft="10dp"
         android:background="@color/colorAccent">
         <TextView
@@ -51,12 +52,13 @@
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginTop="2dp"
+            android:paddingTop="5dp"
             android:layout_below="@id/notification_artist"
             android:orientation="horizontal"
             android:visibility="visible"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="@drawable/layout_top_line">
             <ImageView
                 android:id="@+id/notification_previous"
                 android:layout_width="0dp"
@@ -69,7 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/song_play"
-                android:background="#00000000"
+                android:background="@drawable/layout_left_right_line"
                 android:layout_weight="1"/>
             <ImageView
                 android:id="@+id/notification_next"
