@@ -16,6 +16,7 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
     public static final String PLAY_NEXT = "PLAY_NEXT";
     public static final String PLAY_PAUSE = "PLAY_PAUSE";
     public static final String PLAYER_CANCEL = "PLAYER_CANCEL";
+    public static final String JUMP_TO_MUSIC_PLAYER = "JUMP TO MUSIC PLAYER";
     private MusicPlayerService musicPlayerService;
     private final String LOG_TAG = NotificationBroadcastReceiver.class.getSimpleName();
 
@@ -38,7 +39,11 @@ public class NotificationBroadcastReceiver extends BroadcastReceiver {
         else if (type.equals(PLAY_PAUSE))
             musicPlayerService.changeState();
         else if (type.equals(PLAYER_CANCEL)){
-            musicPlayerService.mNotificationManager.cancel(MusicPlayerService.PLAY_MUSIC_NOTIFICATION_ID);
+            if (musicPlayerService.getState() == MusicPlayerService.PLAYING)
+                musicPlayerService.changeState();
+            musicPlayerService.stopForeground(true);
+        }else if (type.equals(JUMP_TO_MUSIC_PLAYER)){
+            Log.d(LOG_TAG, "jump to music player activity");
         }
         else
             Log.d(LOG_TAG, LOG_TAG+" get the wrong intent action");

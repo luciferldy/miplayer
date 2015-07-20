@@ -370,8 +370,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         if (mNotificationBroadcastReceiver != null)
             unregisterReceiver(mNotificationBroadcastReceiver);
         // store the music list
-        mNotificationManager.cancel(PLAY_MUSIC_NOTIFICATION_ID);
-        Log.d(LOG_TAG, LOG_TAG+" is onDestroy");
+//        mNotificationManager.cancel(PLAY_MUSIC_NOTIFICATION_ID);
+        stopForeground(true);
+        Log.d(LOG_TAG, LOG_TAG + " is onDestroy");
         super.onDestroy();
     }
 
@@ -446,7 +447,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 .setAutoCancel(false);
         mNotification = builder.build();
         mNotification.bigContentView = getExpandView();
-        mNotificationManager.notify(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
+        mNotification.flags |= Notification.FLAG_NO_CLEAR;
+//        mNotificationManager.notify(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
+        startForeground(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
     }
 
     @Override

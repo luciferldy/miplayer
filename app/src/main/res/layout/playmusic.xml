@@ -3,10 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="10dp"
-    android:layout_marginLeft="6dp"
-    android:layout_marginRight="6dp">
+    android:layout_height="match_parent">
     <RelativeLayout
         android:id="@+id/play_messagetitle"
         android:layout_width="fill_parent"
@@ -19,6 +16,7 @@
             android:scaleType="centerCrop"
             android:layout_marginRight="10dp"
             android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
             android:src="@drawable/ic_play_back"
             android:background="#00000000"/>
         <TextView
