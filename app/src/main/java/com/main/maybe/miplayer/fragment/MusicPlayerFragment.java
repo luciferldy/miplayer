@@ -27,6 +27,7 @@ import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.task.LoadingListTask;
+import com.main.maybe.miplayer.util.CommonUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -265,6 +266,8 @@ public class MusicPlayerFragment extends Fragment {
                     int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
                     playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false));
                     mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
+                    mSeekBar.setProgress(mService.getPlayingPosition());
+                    mCurrentTime.setText(CommonUtils.MSToStringTime(mService.getPlayingPosition()));
                     mService.setSeekBarTracker(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
                     // judge if music is playing
                     if (state == MusicPlayerService.PLAYING)

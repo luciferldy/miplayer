@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
@@ -19,11 +18,13 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.SeekBar;
 
+import com.main.maybe.miplayer.AlbumCoverHelper;
 import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
 import com.main.maybe.miplayer.NotificationBroadcastReceiver;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.task.LoadingListTask;
+import com.main.maybe.miplayer.util.CommonUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -91,19 +92,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             public void handleMessage(Message msg) {
                 switch (msg.what){
                     case 0:
-                        int currentPosition = (int)msg.obj;
-                        if (mBinder != null || currentPosition == 0){
-
-                            int minutes = (currentPosition/1000)/60, seconds = (currentPosition/1000)%60;
-                            if (minutes >= 10 && seconds >= 10){
-                                mBinder.setCurrentTime("" + minutes + ":" + seconds);
-                            }else if (minutes >= 10 && seconds < 10){
-                                mBinder.setCurrentTime("" + minutes + ":0" + seconds);
-                            }else if (minutes < 10 && seconds >= 10){
-                                mBinder.setCurrentTime("0" + minutes + ":" + seconds);
-                            }else {
-                                mBinder.setCurrentTime("0" + minutes + ":0" + seconds);
-                            }
+                        int ms = (int)msg.obj;
+                        if (mBinder != null || ms == 0){
+                            mBinder.setCurrentTime(CommonUtils.MSToStringTime(ms));
                         }
                         break;
                     case 1:
@@ -166,6 +157,13 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 //            return false;
 //    }
 
+    public int getPlayingPosition(){
+        if (mMediaPlayer != null)
+            return mMediaPlayer.getCurrentPosition();
+        else
+            return 0;
+    }
+
     public ArrayList<HashMap<String, String>> getPlayingQueue(){
         return mNowPlaying;
     }
@@ -173,10 +171,6 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public int getCurrentPosition(){
         return current_position;
     }
-
-//    public void setCurrentPosition(int currentPosition){
-//        this.current_position = currentPosition;
-//    }
 
     public boolean storeSerializableList(){
         ArrayList<HashMap<String, String>> stores;
@@ -415,16 +409,16 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         seekBarChanger = null;
         seekBarChanger = new AsyncTask<Integer, Void, Void>() {
 
-            int currentPosition = 0;
+            int ms = 0;
             @Override
             protected Void doInBackground(Integer... params) {
                 try {
                     while(mMediaPlayer != null && mMediaPlayer.getCurrentPosition() < params[0]){
                         if (state == PLAYING){
-                            currentPosition = mMediaPlayer.getCurrentPosition();
-                            mSeekBar.setProgress(currentPosition);
+                            ms = mMediaPlayer.getCurrentPosition();
+                            mSeekBar.setProgress(ms);
                             // send to ui thread
-                            handler.obtainMessage(0, currentPosition).sendToTarget();
+                            handler.obtainMessage(0, ms).sendToTarget();
                         }
                         Thread.sleep(100);
                     }
@@ -461,7 +455,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
     public RemoteViews getExpandView(){
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
 
-        Bitmap albumCover = BitmapFactory.decodeResource(this.getResources(), R.drawable.album_cover);
+
+        int albumId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.albumId));
+        int songId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.songId));
+        Bitmap albumCover = AlbumCoverHelper.getArtwork(getApplicationContext(), songId, albumId, true, true);
+
         if (albumCover != null){
             // two ways to get the album cover
 //            Uri albumCoverUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), albumCover, null, null));
