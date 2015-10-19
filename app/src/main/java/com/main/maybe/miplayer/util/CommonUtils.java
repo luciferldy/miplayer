@@ -1,13 +1,12 @@
 package com.main.maybe.miplayer.util;
 
 /**
- * Created by Maybe霏 on 2015/7/15.
+ * Created by Maybe on 2015/7/15.
  */
 public class CommonUtils {
 
     public static int SELF_LIST_ID = -111;
 
-    // 毫秒转标准的字符串式时间
     public static String MSToStringTime(int ms){
         String str;
         int minutes = (ms/1000)/60, seconds = (ms/1000)%60;
