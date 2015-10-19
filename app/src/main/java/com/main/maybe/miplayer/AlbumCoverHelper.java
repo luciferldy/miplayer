@@ -15,15 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Maybe霏 on 2015/6/23.
+ * Created by Maybe�� on 2015/6/23.
  */
 public class AlbumCoverHelper {
 
-    //获取专辑封面的Uri
     private static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
     /**
-     * 获取默认专辑图片
      * @param context
      * @param small
      * @return Bitmap
@@ -31,7 +29,7 @@ public class AlbumCoverHelper {
     public static Bitmap getDefaultArtwork(Context context,boolean small) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.RGB_565;
-        if(small) {  //返回小图片
+        if(small) {  //返回小图�?
             return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
         }
         return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
@@ -39,7 +37,6 @@ public class AlbumCoverHelper {
 
 
     /**
-     * 从文件当中获取专辑封面位图
      * @param context
      * @param song_id
      * @param album_id
@@ -69,19 +66,13 @@ public class AlbumCoverHelper {
                 }
             }
             options.inSampleSize = 1;
-            // 只进行大小判断
             options.inJustDecodeBounds = true;
-            // 调用此方法得到options得到图片大小
             BitmapFactory.decodeFileDescriptor(fd, null, options);
-            // 我们的目标是在800pixel的画面上显示
-            // 所以需要调用computeSampleSize得到图片缩放的比例
             options.inSampleSize = 100;
-            // 我们得到了缩放的比例，现在开始正式读入Bitmap数据
             options.inJustDecodeBounds = false;
             options.inDither = false;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-            //根据options参数，减少所需要的内存
             bm = BitmapFactory.decodeFileDescriptor(fd, null, options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -90,7 +81,6 @@ public class AlbumCoverHelper {
     }
 
     /**
-     * 获取专辑封面位图对象
      * @param context
      * @param song_id
      * @param album_id
@@ -117,20 +107,14 @@ public class AlbumCoverHelper {
             try {
                 in = res.openInputStream(uri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
-                //先制定原始大小
                 options.inSampleSize = 1;
-                //只进行大小判断
                 options.inJustDecodeBounds = true;
-                //调用此方法得到options得到图片的大小
                 BitmapFactory.decodeStream(in, null, options);
-                /** 我们的目标是在你N pixel的画面上显示。 所以需要调用computeSampleSize得到图片缩放的比例 **/
-                /** 这里的target为800是根据默认专辑图片大小决定的，800只是测试数字但是试验后发现完美的结合 **/
                 if(small){
                     options.inSampleSize = computeSampleSize(options, 100);
                 } else{
                     options.inSampleSize = computeSampleSize(options, 600);
                 }
-                // 我们得到了缩放比例，现在开始正式读入Bitmap数据
                 options.inJustDecodeBounds = false;
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -163,7 +147,6 @@ public class AlbumCoverHelper {
     }
 
     /**
-     * 对图片进行合适的缩放
      * @param options
      * @param target
      * @return
