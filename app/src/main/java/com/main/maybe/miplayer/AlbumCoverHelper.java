@@ -15,15 +15,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Maybeö­ on 2015/6/23.
+ * Created by Maybeéœ on 2015/6/23.
  */
 public class AlbumCoverHelper {
 
-    //»ñÈ¡×¨¼­·âÃæµÄUri
+    //è·å–ä¸“è¾‘å°é¢çš„Uri
     private static final Uri albumArtUri = Uri.parse("content://media/external/audio/albumart");
 
     /**
-     * »ñÈ¡Ä¬ÈÏ×¨¼­Í¼Æ¬
+     * è·å–é»˜è®¤ä¸“è¾‘å›¾ç‰‡
      * @param context
      * @param small
      * @return Bitmap
@@ -31,7 +31,7 @@ public class AlbumCoverHelper {
     public static Bitmap getDefaultArtwork(Context context,boolean small) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.RGB_565;
-        if(small) {  //·µ»ØĞ¡Í¼Æ¬
+        if(small) {  //è¿”å›å°å›¾ç‰‡
             return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
         }
         return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
@@ -39,7 +39,7 @@ public class AlbumCoverHelper {
 
 
     /**
-     * ´ÓÎÄ¼şµ±ÖĞ»ñÈ¡×¨¼­·âÃæÎ»Í¼
+     * ä»æ–‡ä»¶å½“ä¸­è·å–ä¸“è¾‘å°é¢ä½å›¾
      * @param context
      * @param song_id
      * @param album_id
@@ -69,19 +69,19 @@ public class AlbumCoverHelper {
                 }
             }
             options.inSampleSize = 1;
-            // Ö»½øĞĞ´óĞ¡ÅĞ¶Ï
+            // åªè¿›è¡Œå¤§å°åˆ¤æ–­
             options.inJustDecodeBounds = true;
-            // µ÷ÓÃ´Ë·½·¨µÃµ½optionsµÃµ½Í¼Æ¬´óĞ¡
+            // è°ƒç”¨æ­¤æ–¹æ³•å¾—åˆ°optionså¾—åˆ°å›¾ç‰‡å¤§å°
             BitmapFactory.decodeFileDescriptor(fd, null, options);
-            // ÎÒÃÇµÄÄ¿±êÊÇÔÚ800pixelµÄ»­ÃæÉÏÏÔÊ¾
-            // ËùÒÔĞèÒªµ÷ÓÃcomputeSampleSizeµÃµ½Í¼Æ¬Ëõ·ÅµÄ±ÈÀı
+            // æˆ‘ä»¬çš„ç›®æ ‡æ˜¯åœ¨800pixelçš„ç”»é¢ä¸Šæ˜¾ç¤º
+            // æ‰€ä»¥éœ€è¦è°ƒç”¨computeSampleSizeå¾—åˆ°å›¾ç‰‡ç¼©æ”¾çš„æ¯”ä¾‹
             options.inSampleSize = 100;
-            // ÎÒÃÇµÃµ½ÁËËõ·ÅµÄ±ÈÀı£¬ÏÖÔÚ¿ªÊ¼ÕıÊ½¶ÁÈëBitmapÊı¾İ
+            // æˆ‘ä»¬å¾—åˆ°äº†ç¼©æ”¾çš„æ¯”ä¾‹ï¼Œç°åœ¨å¼€å§‹æ­£å¼è¯»å…¥Bitmapæ•°æ®
             options.inJustDecodeBounds = false;
             options.inDither = false;
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-            //¸ù¾İoptions²ÎÊı£¬¼õÉÙËùĞèÒªµÄÄÚ´æ
+            //æ ¹æ®optionså‚æ•°ï¼Œå‡å°‘æ‰€éœ€è¦çš„å†…å­˜
             bm = BitmapFactory.decodeFileDescriptor(fd, null, options);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -90,7 +90,7 @@ public class AlbumCoverHelper {
     }
 
     /**
-     * »ñÈ¡×¨¼­·âÃæÎ»Í¼¶ÔÏó
+     * è·å–ä¸“è¾‘å°é¢ä½å›¾å¯¹è±¡
      * @param context
      * @param song_id
      * @param album_id
@@ -117,20 +117,20 @@ public class AlbumCoverHelper {
             try {
                 in = res.openInputStream(uri);
                 BitmapFactory.Options options = new BitmapFactory.Options();
-                //ÏÈÖÆ¶¨Ô­Ê¼´óĞ¡
+                //å…ˆåˆ¶å®šåŸå§‹å¤§å°
                 options.inSampleSize = 1;
-                //Ö»½øĞĞ´óĞ¡ÅĞ¶Ï
+                //åªè¿›è¡Œå¤§å°åˆ¤æ–­
                 options.inJustDecodeBounds = true;
-                //µ÷ÓÃ´Ë·½·¨µÃµ½optionsµÃµ½Í¼Æ¬µÄ´óĞ¡
+                //è°ƒç”¨æ­¤æ–¹æ³•å¾—åˆ°optionså¾—åˆ°å›¾ç‰‡çš„å¤§å°
                 BitmapFactory.decodeStream(in, null, options);
-                /** ÎÒÃÇµÄÄ¿±êÊÇÔÚÄãN pixelµÄ»­ÃæÉÏÏÔÊ¾¡£ ËùÒÔĞèÒªµ÷ÓÃcomputeSampleSizeµÃµ½Í¼Æ¬Ëõ·ÅµÄ±ÈÀı **/
-                /** ÕâÀïµÄtargetÎª800ÊÇ¸ù¾İÄ¬ÈÏ×¨¼­Í¼Æ¬´óĞ¡¾ö¶¨µÄ£¬800Ö»ÊÇ²âÊÔÊı×Öµ«ÊÇÊÔÑéºó·¢ÏÖÍêÃÀµÄ½áºÏ **/
+                /** æˆ‘ä»¬çš„ç›®æ ‡æ˜¯åœ¨ä½ N pixelçš„ç”»é¢ä¸Šæ˜¾ç¤ºã€‚ æ‰€ä»¥éœ€è¦è°ƒç”¨computeSampleSizeå¾—åˆ°å›¾ç‰‡ç¼©æ”¾çš„æ¯”ä¾‹ **/
+                /** è¿™é‡Œçš„targetä¸º800æ˜¯æ ¹æ®é»˜è®¤ä¸“è¾‘å›¾ç‰‡å¤§å°å†³å®šçš„ï¼Œ800åªæ˜¯æµ‹è¯•æ•°å­—ä½†æ˜¯è¯•éªŒåå‘ç°å®Œç¾çš„ç»“åˆ **/
                 if(small){
                     options.inSampleSize = computeSampleSize(options, 100);
                 } else{
                     options.inSampleSize = computeSampleSize(options, 600);
                 }
-                // ÎÒÃÇµÃµ½ÁËËõ·Å±ÈÀı£¬ÏÖÔÚ¿ªÊ¼ÕıÊ½¶ÁÈëBitmapÊı¾İ
+                // æˆ‘ä»¬å¾—åˆ°äº†ç¼©æ”¾æ¯”ä¾‹ï¼Œç°åœ¨å¼€å§‹æ­£å¼è¯»å…¥Bitmapæ•°æ®
                 options.inJustDecodeBounds = false;
                 options.inDither = false;
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -163,7 +163,7 @@ public class AlbumCoverHelper {
     }
 
     /**
-     * ¶ÔÍ¼Æ¬½øĞĞºÏÊÊµÄËõ·Å
+     * å¯¹å›¾ç‰‡è¿›è¡Œåˆé€‚çš„ç¼©æ”¾
      * @param options
      * @param target
      * @return

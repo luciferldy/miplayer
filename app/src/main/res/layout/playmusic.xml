@@ -7,8 +7,7 @@
     <RelativeLayout
         android:id="@+id/play_messagetitle"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="6dp">
+        android:layout_height="wrap_content">
         <ImageButton
             android:id="@+id/play_back"
             android:layout_width="50dp"
@@ -16,9 +15,9 @@
             android:scaleType="centerCrop"
             android:layout_marginRight="10dp"
             android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
             android:src="@drawable/ic_play_back"
-            android:background="#00000000"/>
+            android:background="@color/colorAccent"
+            android:layout_alignParentTop="true" />
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
