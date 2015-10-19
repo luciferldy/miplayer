@@ -8,7 +8,7 @@ import android.util.Log;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 
 /**
- * Created by Maybeö­ on 2015/6/3.
+ * Created by Maybeéœ on 2015/6/3.
  */
 public class NotificationBroadcastReceiver extends BroadcastReceiver {
 
