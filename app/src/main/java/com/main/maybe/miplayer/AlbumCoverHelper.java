@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by Maybe�� on 2015/6/23.
+ * Created by Maybe on 2015/6/23.
  */
 public class AlbumCoverHelper {
 
@@ -29,7 +29,7 @@ public class AlbumCoverHelper {
     public static Bitmap getDefaultArtwork(Context context,boolean small) {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.RGB_565;
-        if(small) {  //返回小图�?
+        if(small) {  //返回小图
             return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
         }
         return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
