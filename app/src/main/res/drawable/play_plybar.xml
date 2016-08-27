@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@android:id/background">
+     <nine-patch
+         android:src="@drawable/play_plybar_bg" android:dither="true" />
+    </item>
+    <item android:id="@android:id/progress">
+        <clip android:clipOrientation="horizontal"
+            android:gravity="left">
+            <nine-patch android:src="@drawable/play_plybar_red" android:dither="true" />
+        </clip>
+    </item>
+</layer-list>

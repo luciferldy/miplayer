@@ -7,20 +7,18 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.main.maybe.miplayer.MusicPlayerActivity;
+import com.main.maybe.miplayer.ui.activity.MusicPlayerActivity;
 import com.main.maybe.miplayer.R;
-import com.main.maybe.miplayer.SongInAlbumOrArtActivity;
-import com.main.maybe.miplayer.adapter.AlbumListAdapter;
-import com.main.maybe.miplayer.adapter.ArtistListAdapter;
-import com.main.maybe.miplayer.adapter.SongListAdapter;
-import com.main.maybe.miplayer.fragment.MusicPlayerFragment;
+import com.main.maybe.miplayer.ui.adapter.AlbumListAdapter;
+import com.main.maybe.miplayer.ui.adapter.ArtistListAdapter;
+import com.main.maybe.miplayer.ui.fragment.MusicPlayerFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +27,8 @@ import java.util.HashMap;
  * Created by Maybe霏 on 2015/5/17.
  */
 public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
+
+    private static final String LOG_TAG = LoadingListTask.class.getSimpleName();
 
     private int type = 0; // 0 song, 1 artist, 2 album
     private Context context;
@@ -52,15 +52,14 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
     public static final String ENTER_FSMUSIC_PLAYER_FROM_WHERE = "ENTER_FSMUSIC_PLAYER_FROM_WHERE";
 
     private ArrayList<HashMap<String, String>> items;
-    private ListView lv;
+    private RecyclerView rv;
     private LayoutInflater mInflater;
     private FragmentManager fmanager;
-    private String LOG_TAG = LoadingListTask.class.getSimpleName();
 
-    public LoadingListTask(int type, Context context, ListView lv, LayoutInflater mInflater, FragmentManager fmanager){
+    public LoadingListTask(int type, Context context, RecyclerView rv, LayoutInflater mInflater, FragmentManager fmanager){
         this.type = type;
         this.context = context;
-        this.lv = lv;
+        this.rv = rv;
         this.mInflater = mInflater;
         this.fmanager = fmanager;
     }
@@ -71,32 +70,31 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
         if (aBoolean){
             switch (type){
                 case 0:
-                    lv.setAdapter(new SongListAdapter(items, mInflater));
-                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // add the item to music queue
-                            // play music
-                            Intent intent = new Intent(context, MusicPlayerActivity.class);
-                            intent.putExtra(songList, items);
-                            intent.putExtra(playPosition, position);
-                            intent.putExtra(ENTER_FSMUSIC_PLAYER_FROM_WHERE, MusicPlayerFragment.FROM_CLICK_ITEM);
-                            context.startActivity(intent);
-                        }
-                    });
+//                    rv.setAdapter(new SongListAdapter(items, mInflater));
+//                    rv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            // add the item to music queue
+//                            // play music
+//                            Intent intent = new Intent(context, MusicPlayerActivity.class);
+//                            intent.putExtra(songList, items);
+//                            intent.putExtra(playPosition, position);
+//                            intent.putExtra(ENTER_FSMUSIC_PLAYER_FROM_WHERE, MusicPlayerFragment.FROM_CLICK_ITEM);
+//                            context.startActivity(intent);
+//                        }
+//                    });
                     break;
                 case 1:
                     // artist
-                    lv.setAdapter(new ArtistListAdapter(items, mInflater));
-                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            int Id;
-                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.artistId));
-                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
-                            intent.putExtra("type", "artist");
-                            intent.putExtra(LoadingListTask.artistId, Id);
-                            context.startActivity(intent);
+//                    lv.setAdapter(new ArtistListAdapter(items, mInflater));
+//                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            int Id;
+//                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.artistId));
+//                            intent.putExtra("type", "artist");
+//                            intent.putExtra(LoadingListTask.artistId, Id);
+//                            context.startActivity(intent);
 
                             // change the fragment
 //                            Bundle  b = new Bundle();
@@ -111,40 +109,38 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
 //                            Log.d(LOG_TAG, "artist item click before commit");
 //                            ft.commit();
 //                            Log.d(LOG_TAG, "artist item click and commit");
-                        }
-                    });
+//                        }
+//                    });
                     break;
                 case 2:
                     // album
-                    lv.setAdapter(new AlbumListAdapter(items, mInflater));
-                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // replace the fragment
-                            int Id;
-                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.albumId));
-                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
-                            intent.putExtra("type", "album");
-                            intent.putExtra(LoadingListTask.albumId, Id);
-                            context.startActivity(intent);
-                        }
-                    });
+//                    lv.setAdapter(new AlbumListAdapter(items, mInflater));
+//                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            // replace the fragment
+//                            int Id;
+//                            Id = Integer.parseInt(items.get(position).get(LoadingListTask.albumId));
+//                            intent.putExtra("type", "album");
+//                            intent.putExtra(LoadingListTask.albumId, Id);
+//                            context.startActivity(intent);
+//                        }
+//                    });
                     break;
                 case 3:
-                    ArrayList<String> list_name = new ArrayList<>();
-                    list_name.add("正在播放列表");
-                    lv.setAdapter(new ArrayAdapter<>(
-                            context, R.layout.mylistitem, R.id.mylist_name, list_name
-                    ));
-                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            // transfer the current queue
-                            Intent intent = new Intent(context, SongInAlbumOrArtActivity.class);
-                            intent.putExtra("type", "self_list");
-                            context.startActivity(intent);
-                        }
-                    });
+//                    ArrayList<String> list_name = new ArrayList<>();
+//                    list_name.add("正在播放列表");
+//                    lv.setAdapter(new ArrayAdapter<>(
+//                            context, R.layout.mylistitem, R.id.mylist_name, list_name
+//                    ));
+//                    lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                        @Override
+//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                            // transfer the current queue
+//                            intent.putExtra("type", "self_list");
+//                            context.startActivity(intent);
+//                        }
+//                    });
                     break;
             }
         }else {
@@ -194,6 +190,7 @@ public class LoadingListTask extends AsyncTask<Void, Void, Boolean> {
         ContentResolver resolver = context.getContentResolver();
         int second;
         try {
+            // get audio from content resolver
             Cursor cursor = resolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null,
                     MediaStore.Audio.Media.DEFAULT_SORT_ORDER);
             HashMap<String, String> item;

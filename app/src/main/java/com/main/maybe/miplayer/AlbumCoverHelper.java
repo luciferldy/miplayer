@@ -30,9 +30,9 @@ public class AlbumCoverHelper {
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPreferredConfig = Bitmap.Config.RGB_565;
         if(small) {  //返回小图
-            return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
+            return BitmapFactory.decodeResource(context.getResources(), R.drawable.list_cover_alb, opts);
         }
-        return BitmapFactory.decodeResource(context.getResources(), R.drawable.album_cover, opts);
+        return BitmapFactory.decodeResource(context.getResources(), R.drawable.list_cover_alb, opts);
     }
 
 

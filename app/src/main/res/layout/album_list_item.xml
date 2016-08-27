@@ -1,20 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical">
+    android:layout_height="68dip"
+    android:layout_marginLeft="10dip"
+    android:layout_marginRight="21dip">
 
     <ImageView
         android:id="@+id/album_cover"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/placeholder_disk_150"/>
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/list_cover_alb"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="7dip"
+        android:layout_marginLeft="10dip"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/album_cover"
         android:gravity="center_vertical"
         android:orientation="vertical">
 
@@ -23,17 +27,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="1"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="8dp"
             android:textColor="@color/md_black"
-            android:textSize="16dip"
+            android:textSize="12dip"
             android:text="Begin Again" />
 
         <TextView
+            android:id="@+id/album_artist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="1"
             android:textColor="@color/md_grey_700"
-            android:textSize="13dip"
+            android:textSize="10dip"
             android:text="1 Adam Levine"/>
     </LinearLayout>
-</LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/list_icn_more"/>
+</RelativeLayout>

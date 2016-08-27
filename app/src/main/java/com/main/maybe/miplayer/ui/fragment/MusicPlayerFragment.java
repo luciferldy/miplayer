@@ -8,6 +8,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.AlbumCoverHelper;
+import com.main.maybe.miplayer.model.SingleBean;
 import com.main.maybe.miplayer.ui.activity.HomeActivity;
 import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
 import com.main.maybe.miplayer.R;
@@ -41,14 +43,14 @@ public class MusicPlayerFragment extends Fragment {
     private SeekBar mSeekBar;
     private TextView mTotalTime;
     private TextView mCurrentTime;
-    private ImageButton playPausedButton;
-    private ImageButton playPreviousButton;
-    private ImageButton playNextButton;
+    private ImageView playPausedButton;
+    private ImageView playPreviousButton;
+    private ImageView playNextButton;
     private TextView playTitle;
     private TextView playAlbum;
     private TextView playArtist;
     private ImageView playAlbumCover;
-    private ImageButton back;
+    private ImageView back;
 
 
     private MusicPlayerService mService;
@@ -59,7 +61,7 @@ public class MusicPlayerFragment extends Fragment {
     int playPosition;
 
     int state;
-    private List<HashMap<String, String>> songs = new ArrayList<>();
+    private List<SingleBean> songs = new ArrayList<>();
     public static int ENTER_FSMUSIC_PLAYER_FROM_WHERE = 0;
     public static int FROM_BOTTOM_MUSIC_PLAYER = 1;
     public static int FROM_CLICK_ITEM = 2;
@@ -77,24 +79,24 @@ public class MusicPlayerFragment extends Fragment {
 
         // get the data
         Bundle bundle = getArguments();
-        songs = (ArrayList<HashMap<String, String>>)bundle.getSerializable(LoadingListTask.songList);
+        songs = (List<SingleBean>) bundle.getSerializable(LoadingListTask.songList);
         playPosition = bundle.getInt(LoadingListTask.playPosition);
         ENTER_FSMUSIC_PLAYER_FROM_WHERE = bundle.getInt(LoadingListTask.ENTER_FSMUSIC_PLAYER_FROM_WHERE);
 
-        View rootView = inflater.inflate(R.layout.playmusic, container, false);
+        View rootView = inflater.inflate(R.layout.music_player, container, false);
 
-        playTitle = (TextView)rootView.findViewById(R.id.play_song_name);
-        playAlbum = (TextView)rootView.findViewById(R.id.play_album);
-        playArtist = (TextView)rootView.findViewById(R.id.play_singer);
+        playTitle = (TextView)rootView.findViewById(R.id.acb_single);
+//        playAlbum = (TextView)rootView.findViewById(R.id.play_album);
+        playArtist = (TextView)rootView.findViewById(R.id.acb_artist);
 
-        playPausedButton = (ImageButton)rootView.findViewById(R.id.play_paused);
+        playPausedButton = (ImageView)rootView.findViewById(R.id.play);
         playPausedButton.setClickable(false);
-        playPreviousButton = (ImageButton)rootView.findViewById(R.id.play_previous);
+        playPreviousButton = (ImageView)rootView.findViewById(R.id.play_previous);
         playPreviousButton.setClickable(false);
-        playNextButton = (ImageButton)rootView.findViewById(R.id.play_next);
+        playNextButton = (ImageView)rootView.findViewById(R.id.play_next);
         playNextButton.setClickable(false);
 
-        back = (ImageButton)rootView.findViewById(R.id.play_back);
+        back = (ImageView) rootView.findViewById(R.id.acb_back);
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,14 +104,14 @@ public class MusicPlayerFragment extends Fragment {
             }
         });
 
-        mSeekBar = (SeekBar) rootView.findViewById(R.id.play_progress);
+        mSeekBar = (SeekBar) rootView.findViewById(R.id.seek_bar);
         initOnSeekBarChangeListener();
         initButtonOnClickListener();
         mSeekBar.setOnSeekBarChangeListener(mOnSeekBarChangeListener);
 
-        mTotalTime = (TextView) rootView.findViewById(R.id.play_totaltime);
-        mCurrentTime = (TextView) rootView.findViewById(R.id.play_currenttime);
-        playAlbumCover = (ImageView)rootView.findViewById(R.id.play_album_cover);
+        mTotalTime = (TextView) rootView.findViewById(R.id.time_duration);
+        mCurrentTime = (TextView) rootView.findViewById(R.id.time_progress);
+        playAlbumCover = (ImageView)rootView.findViewById(R.id.album_cover);
         Log.d(LOG_TAG, LOG_TAG + " is onCreateView");
 
         initFullScreenMusicPlayer();
@@ -120,20 +122,20 @@ public class MusicPlayerFragment extends Fragment {
     public void initFullScreenMusicPlayer(){
 
         // 当后台并没有音乐播放的服务时，表明这个服务时第一次启动
-        if (!HomeActivity.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity())){
+        if ( !CommonUtils.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()) ) {
             SERVICE_LAUNCH_MODE = SERVICE_NEVER_LAUNCH;
             if (ENTER_FSMUSIC_PLAYER_FROM_WHERE == FROM_BOTTOM_MUSIC_PLAYER){
-                HashMap<String, String> currentSong;
+                SingleBean currentSong;
                 currentSong = songs.get(playPosition);
-                playTitle.setText(currentSong.get(LoadingListTask.songName));
-                playAlbum.setText(currentSong.get(LoadingListTask.albumName));
-                playArtist.setText(currentSong.get(LoadingListTask.artistName));
-                int userId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
-                int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
+                playTitle.setText(currentSong.getTitle());
+                playAlbum.setText(currentSong.getAlbum());
+                playArtist.setText(currentSong.getArtist());
+                int userId = Integer.parseInt(currentSong.get_id());
+                int albumId = Integer.parseInt(currentSong.getAlbum_id());
                 playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), userId, albumId, true, false));
                 mCurrentTime.setText("00:00");
-                mTotalTime.setText(currentSong.get(LoadingListTask.duration));
-                mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
+                mTotalTime.setText(CommonUtils.timeFormatMs2Str(Integer.parseInt(currentSong.getDuration())));
+                mSeekBar.setMax(Integer.parseInt(currentSong.getDuration()));
                 mSeekBar.setProgress(0);
                 return;
             }
@@ -145,7 +147,7 @@ public class MusicPlayerFragment extends Fragment {
     public void bindMusicService(){
         defineServiceConnection(); // we define our service connection mConnection
         Intent intent = new Intent(getActivity(), MusicPlayerService.class);
-        intent.putExtra(MusicPlayerService.ACTIVITY_INDENTIFY, MusicPlayerService.FULLSCREEN_PLAYER_ACTIVITY);
+//        intent.putExtra(MusicPlayerService.ACTIVITY_INDENTIFY, MusicPlayerService.FULLSCREEN_PLAYER_ACTIVITY);
         getActivity().bindService(intent, mConnection
                 , Context.BIND_AUTO_CREATE);
     }
@@ -181,8 +183,8 @@ public class MusicPlayerFragment extends Fragment {
 
     // 获取与 service 的连接
     private void defineServiceConnection() {
-        if (!HomeActivity.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()))
-            getActivity().startService(new Intent(getActivity(), MusicPlayerService.class));
+        if ( !CommonUtils.isServiceWorked(MusicPlayerService.MUSIC_PLAYER_SERVICE_NAME, getActivity()))
+            getActivity().startService(new Intent(getActivity(), MusicPlayerService.class) );
         // 建立连接时开启了一个服务，并且返回了能够通信使用的Binder
         mConnection = new ServiceConnection() {
             @Override
@@ -228,18 +230,18 @@ public class MusicPlayerFragment extends Fragment {
                     @Override
                     public void setImagePlay() {
                         if (playPausedButton != null)
-                            playPausedButton.setImageResource(R.drawable.song_play);
+                            playPausedButton.setImageResource(R.drawable.play_btn_play);
                     }
 
                     @Override
                     public void setImagePaused() {
                         if (playPausedButton != null)
-                            playPausedButton.setImageResource(R.drawable.song_pause);
+                            playPausedButton.setImageResource(R.drawable.play_btn_pause);
                     }
                 });
 
                 state = mService.getState();
-                mService.registerSeekBar(mSeekBar);
+//                mService.registerSeekBar(mSeekBar);
                 mBound = true;
 
                 Log.d(LOG_TAG, "Service is connected and well to go");
@@ -254,24 +256,24 @@ public class MusicPlayerFragment extends Fragment {
                     }
                     Log.d(LOG_TAG, "enter the from click item");
 
-                }else if (ENTER_FSMUSIC_PLAYER_FROM_WHERE == FROM_BOTTOM_MUSIC_PLAYER && SERVICE_LAUNCH_MODE != SERVICE_NEVER_LAUNCH){
+                } else if (ENTER_FSMUSIC_PLAYER_FROM_WHERE == FROM_BOTTOM_MUSIC_PLAYER && SERVICE_LAUNCH_MODE != SERVICE_NEVER_LAUNCH){
 
-                    HashMap<String, String> currentSong;
+                    SingleBean currentSong;
                     currentSong = mService.getPlayingQueue().get(mService.getCurrentPosition());
-                    playTitle.setText(currentSong.get(LoadingListTask.songName));
-                    playAlbum.setText(currentSong.get(LoadingListTask.albumName));
-                    playArtist.setText(currentSong.get(LoadingListTask.artistName));
-                    mTotalTime.setText(currentSong.get(LoadingListTask.duration));
-                    int songId = Integer.parseInt(currentSong.get(LoadingListTask.songId));
-                    int albumId = Integer.parseInt(currentSong.get(LoadingListTask.albumId));
+                    playTitle.setText(currentSong.getTitle());
+                    playAlbum.setText(currentSong.getAlbum());
+                    playArtist.setText(currentSong.getArtist());
+                    mTotalTime.setText(CommonUtils.timeFormatMs2Str(Integer.parseInt(currentSong.getDuration())));
+                    int songId = Integer.parseInt(currentSong.get_id());
+                    int albumId = Integer.parseInt(currentSong.getAlbum_id());
                     playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false));
-                    mSeekBar.setMax(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
+                    mSeekBar.setMax(Integer.parseInt(currentSong.getDuration()));
                     mSeekBar.setProgress(mService.getPlayingPosition());
-                    mCurrentTime.setText(CommonUtils.MSToStringTime(mService.getPlayingPosition()));
-                    mService.setSeekBarTracker(Integer.parseInt(currentSong.get(LoadingListTask.duration_t)));
+                    mCurrentTime.setText(CommonUtils.timeFormatMs2Str(mService.getPlayingPosition()));
+                    mService.startSeekBarTracker(Integer.parseInt(currentSong.getDuration()));
                     // judge if music is playing
                     if (state == MusicPlayerService.PLAYING)
-                        playPausedButton.setImageResource(R.drawable.song_pause);
+                        playPausedButton.setImageResource(R.drawable.play_btn_pause);
 
                     Log.d(LOG_TAG, "enter the has service");
 
@@ -324,10 +326,10 @@ public class MusicPlayerFragment extends Fragment {
                     state = mService.changeState();
                     switch (state){
                         case MusicPlayerService.PLAYING:
-                            playPausedButton.setImageResource(R.drawable.song_pause);
+                            playPausedButton.setImageResource(R.drawable.play_btn_pause);
                             break;
                         case MusicPlayerService.PAUSED:
-                            playPausedButton.setImageResource(R.drawable.song_play);
+                            playPausedButton.setImageResource(R.drawable.play_btn_play);
                             break;
                     }
                 }
@@ -339,7 +341,7 @@ public class MusicPlayerFragment extends Fragment {
             public void onClick(View v) {
                 if (mService == null)
                     bindMusicService();
-                playPausedButton.setImageResource(R.drawable.song_play);
+                playPausedButton.setImageResource(R.drawable.play_btn_play);
                 mService.playPrevious();
             }
         });
@@ -350,7 +352,7 @@ public class MusicPlayerFragment extends Fragment {
                 // set the icon play
                 if (mService == null)
                     bindMusicService();
-                playPausedButton.setImageResource(R.drawable.song_play);
+                playPausedButton.setImageResource(R.drawable.play_btn_play);
                 mService.playNext();
             }
         });

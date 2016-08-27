@@ -1,17 +1,22 @@
 package com.main.maybe.miplayer.service;
 
+import com.main.maybe.miplayer.model.SingleBean;
+
 import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by Maybe霏 on 2015/3/4.
+ * Created by MaybeFei on 2015/3/4.
  */
 public interface MusicPlayerServiceInterface {
-    public void addMusicToQueue(HashMap<String, String> music);
-    public void addMusicToQueue(List<HashMap<String, String>> music);
-    public void removeMusicFromQueue(HashMap<String, String> music);
-    public void skipToPoint(int point);
-    public void play();
-    public void play(int position);
-    public void pause();
+
+    void addMusicToQueue(SingleBean bean);
+    void addMusicToQueue(List<SingleBean> songs);
+    void removeMusicFromQueue(SingleBean bean);
+    void removeMusicFromQueue(List<SingleBean> songs);
+    void skipToPoint(int point);
+    void play(int position);
+    void play();
+    void pause();
+
 }

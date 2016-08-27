@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.AsyncTask;
@@ -16,15 +17,16 @@ import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.SeekBar;
 
 import com.main.maybe.miplayer.AlbumCoverHelper;
-import com.main.maybe.miplayer.HeadPhoneBroadcastReceiver;
-import com.main.maybe.miplayer.NotificationBroadcastReceiver;
+import com.main.maybe.miplayer.receiver.HeadPhoneBroadcastReceiver;
+import com.main.maybe.miplayer.receiver.NotificationBroadcastReceiver;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
+import com.main.maybe.miplayer.model.SingleBean;
 import com.main.maybe.miplayer.task.LoadingListTask;
 import com.main.maybe.miplayer.util.CommonUtils;
+import com.main.maybe.miplayer.util.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,13 +41,15 @@ import java.util.List;
  */
 public class MusicPlayerService extends Service implements MusicPlayerServiceInterface{
 
+    public static final String MUSIC_PLAYER_SERVICE_NAME = "com.main.maybe.miplayer.service.MusicPlayerService";
+    private static final String ACTION_PLAY = "com.main.maybe.miplayer.PLAY";
+    private final String LOG_TAG = MusicPlayerService.class.getSimpleName();
+
     public final static int PAUSED = 0;
     public final static int PLAYING = 1;
-    public final static int BOTTOM_PLAYER_ACTIVITY = 1;
-    public final static int FULLSCREEN_PLAYER_ACTIVITY = 2;
     public final static String ACTIVITY_INDENTIFY = "ACTIVITY_INDENTIFY";
 
-    public final static String MUSIC_PLAYER_SERVICE_NAME = "com.main.maybe.miplayer.service.MusicPlayerService";
+
 
     public final static String pathName = "/sdcard/miplayer/";
     public final static String fileName = "playlist.txt";
@@ -59,103 +63,111 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 //    public static final String ACTION_NOTIFICATION_NEXT = "action_notification_next";
 
     private int state = PAUSED;
-    private int current_position = 0;
+
+    private Handler mSeekBarHandler;
+    private AsyncTask<Integer, Void, Void> mSeekBarTracker;
 
     private MusicPlayerServiceBinder mBinder;
-    private ArrayList<HashMap<String, String>> mNowPlaying;
+    private List<SingleBean> mPlayQueue; // playing list
+    private int mPlayPosition = 0;
+
     private MediaPlayer mMediaPlayer;
-    private OnCompletionListener mCompletionListener;
 
     private HeadPhoneBroadcastReceiver mHeadPhoneBroadcastReceiver;
     private NotificationBroadcastReceiver mNotificationBroadcastReceiver;
-    private SeekBar mSeekBar;
-
-    private AsyncTask<Integer, Void, Void> seekBarChanger;
-
-    private final String LOG_TAG = MusicPlayerService.class.getSimpleName();
-
     private Notification mNotification;
     public NotificationManager mNotificationManager;
-    private Handler handler;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        registerBroadcastReceiver();
-        Log.d(LOG_TAG, LOG_TAG + " is onCreate");
+//        registerBroadcastReceiver();
+        Logger.i(LOG_TAG, "onCreate");
     }
 
-    public boolean bindMusicPlayer(){
-
-        handler = new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what){
-                    case 0:
-                        int ms = (int)msg.obj;
-                        if (mBinder != null || ms == 0){
-                            mBinder.setCurrentTime(CommonUtils.MSToStringTime(ms));
-                        }
-                        break;
-                    case 1:
-                        Log.d(LOG_TAG, "handle message fail.");
-                        break;
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Logger.i(LOG_TAG, "onStartCommand");
+        if (intent.getAction().equals(ACTION_PLAY)) {
+            mMediaPlayer = new MediaPlayer();
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    playNext();
                 }
-            }
-        };
+            });
+            mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    // init title, artist, duration, etc
+
+                    int duration = Integer.parseInt(mPlayQueue.get(mPlayPosition).getDuration());
+                    mBinder.setTotalTime(CommonUtils.timeFormatMs2Str(duration));
+                    mBinder.setMusicTitle(mPlayQueue.get(mPlayPosition).getTitle());
+                    mBinder.setMusicAlbum(mPlayQueue.get(mPlayPosition).getAlbum());
+                    mBinder.setMusicArtist(mPlayQueue.get(mPlayPosition).getArtist());
+                    startSeekBarTracker(mMediaPlayer.getDuration());
+                    play();
+                }
+            });
+            mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    // state Error, need reset to idle
+                    return true;
+                }
+            });
+
+            mSeekBarHandler = new Handler(){
+                @Override
+                public void handleMessage(Message msg) {
+                    switch (msg.what){
+                        case 0:
+                            int ms = (int) msg.obj;
+                            if (mBinder != null || ms == 0){
+                                mBinder.setCurrentTime(CommonUtils.timeFormatMs2Str(ms));
+                            }
+                            break;
+                        case 1:
+                            Log.d(LOG_TAG, "handle message fail match.");
+                            break;
+                    }
+                }
+            };
+        }
+        return super.onStartCommand(intent, flags, startId);
+
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
 
         mBinder = new MusicPlayerServiceBinder(this, this);
+        return mBinder;
 
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                // /s
-                int totalTime = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration_t)) / 1000;
-                // SeekBar 的长度是 ms 级的
-                if (mSeekBar != null)
-                    mSeekBar.setMax(totalTime * 1000);
+    }
 
-                int minutes = totalTime / 60, seconds = totalTime % 60;
-                if (minutes >= 10 && seconds >= 10) {
-                    mBinder.setTotalTime("" + minutes + ":" + seconds);
-                } else if (minutes >= 10 && seconds < 10) {
-                    mBinder.setTotalTime("" + minutes + ":0" + seconds);
-                } else if (minutes < 10 && seconds >= 10) {
-                    mBinder.setTotalTime("0" + minutes + ":" + seconds);
-                } else {
-                    mBinder.setTotalTime("0" + minutes + ":0" + seconds);
-                }
+    @Override
+    public boolean onUnbind(Intent intent) {
+        if (mSeekBarTracker != null)
+            mSeekBarTracker.cancel(true);
+        mSeekBarTracker = null;
 
-                // set music information
-                mBinder.setMusicTitle(mNowPlaying.get(current_position).get(LoadingListTask.songName));
-                mBinder.setMusicAlbum(mNowPlaying.get(current_position).get(LoadingListTask.albumName));
-                mBinder.setMusicArtist(mNowPlaying.get(current_position).get(LoadingListTask.artistName));
-
-                int songId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.songId));
-                int albumId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.albumId));
-                mBinder.setAlbumCover(songId, albumId);
-
-
-                // 将 getDuration 和 play 放在这里保证获取信息时加载完成
-                if (mSeekBar != null)
-                    setSeekBarTracker(mMediaPlayer.getDuration());
-                play();
-            }
-        });
+        Logger.i(LOG_TAG, "onUnbind with state:　" + ((state == PLAYING) ? "PLAYING" : "PAUSED" ));
         return true;
     }
 
-    /*
-     * 判断Service中是否有队列
-     * true 有播放队列
-     * false 没有播放队列
-     */
-//    public boolean hasPlayingQueue(){
-//        if ( mNowPlaying != null && mNowPlaying.size() != 0 )
-//            return true;
-//        else
-//            return false;
-//    }
+    @Override
+    public void onDestroy() {
+
+        Logger.i(LOG_TAG, " onDestroy");
+        mMediaPlayer.stop();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+        super.onDestroy();
+
+    }
 
     public int getPlayingPosition(){
         if (mMediaPlayer != null)
@@ -164,19 +176,26 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
             return 0;
     }
 
-    public ArrayList<HashMap<String, String>> getPlayingQueue(){
-        return mNowPlaying;
+    /**
+     * 获得播放列表
+     * @return
+     */
+    public List<SingleBean> getPlayingQueue(){
+        return mPlayQueue;
     }
 
+    /**
+     * 获得当前播放音乐在播放列表中的位置
+     * @return
+     */
     public int getCurrentPosition(){
-        return current_position;
+        return mPlayPosition;
     }
 
     public boolean storeSerializableList(){
-        ArrayList<HashMap<String, String>> stores;
-        /*
+        List<SingleBean> stores = new ArrayList<>();
+        /**
          * 可能需要先对磁盘的挂载情况进行判断
-         *
          */
         try {
             File path = new File(pathName);
@@ -195,11 +214,10 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
             FileOutputStream fos = new FileOutputStream(file);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
-            stores = mNowPlaying;
-            HashMap<String, String> map = new HashMap<>();
-            map.put(PlayingNumber, current_position+"");
-            stores.add(map);
-
+            stores.addAll(mPlayQueue);
+            SingleBean bean = new SingleBean();
+            bean.setDuration(String.valueOf(mPlayPosition));
+            stores.add(bean);
             oos.writeObject(stores);
         }catch (Exception e){
             e.printStackTrace();
@@ -209,21 +227,53 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         return true;
     }
 
-    public void registerSeekBar(SeekBar mSeekBar){
-        this.mSeekBar = mSeekBar;
-    }
-
     @Override
-    public void addMusicToQueue(HashMap<String, String> music) {
-        mNowPlaying.add(music);
-    }
-
-    @Override
-    public void addMusicToQueue(List<HashMap<String, String>> music) {
-        mNowPlaying = new ArrayList<>();
-        for (int i = 0 ; i < music.size() ; i++){
-            mNowPlaying.add(music.get(i));
+    public void addMusicToQueue(SingleBean bean) {
+        if (mPlayQueue == null) {
+            mPlayQueue = new ArrayList<>();
         }
+        mPlayQueue.add(bean);
+    }
+
+    @Override
+    public void addMusicToQueue(List<SingleBean> songs) {
+        if (mPlayQueue == null) {
+            mPlayQueue = new ArrayList<>();
+        }
+        mPlayQueue.addAll(songs);
+    }
+
+    @Override
+    public void removeMusicFromQueue(SingleBean bean) {
+        mPlayQueue.remove(bean);
+    }
+
+    @Override
+    public void removeMusicFromQueue(List<SingleBean> songs) {
+        mPlayQueue.removeAll(songs);
+    }
+
+    @Override
+    public void skipToPoint(int point) {
+        mMediaPlayer.seekTo(point);
+    }
+
+    @Override
+    public void play() {
+
+        mMediaPlayer.start();
+        if (mBinder != null)
+            mBinder.play();
+
+    }
+
+    @Override
+    public void pause() {
+
+        mMediaPlayer.pause();
+        if (mBinder != null)
+            mBinder.pause();
+
     }
 
     public boolean registerBroadcastReceiver(){
@@ -244,37 +294,11 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         return true;
     }
 
-    @Override
-    public void removeMusicFromQueue(HashMap<String, String> music) {
-        // it can remove object
-        mNowPlaying.remove(music);
-    }
-
+    /**
+     * 清空播放列表
+     */
     public void clearMusicQueue(){
-        mNowPlaying.clear();
-    }
-
-    @Override
-    public void skipToPoint(int point) {
-        mMediaPlayer.seekTo(point);
-    }
-
-    @Override
-    public void play() {
-        state = PLAYING;
-        mMediaPlayer.start();
-        if (mBinder != null)
-            mBinder.setImagePaused();
-        showNotification();
-    }
-
-    @Override
-    public void pause() {
-        state = PAUSED;
-        mMediaPlayer.pause();
-        if (mBinder != null)
-            mBinder.setImagePlay();
-        showNotification();
+        mPlayQueue.clear();
     }
 
     public int changeState(){
@@ -289,42 +313,7 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         return state;
     }
 
-    @Override
-    public IBinder onBind(Intent intent) {
 
-        state = PLAYING;
-        // the now playing queue
-        mNowPlaying = new ArrayList<>();
-        // the media player
-        mMediaPlayer = new MediaPlayer();
-        mCompletionListener = new OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playNext();
-            }
-        };
-        mMediaPlayer.setOnCompletionListener(mCompletionListener);
-
-        // bind the music service
-        bindMusicPlayer();
-
-        // 当正在有音乐播放时
-//        if (state == PLAYING)
-//            mBinder.setImagePaused();
-//        setSeekBarTracker(Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.duration)));
-
-        return mBinder;
-    }
-
-    @Override
-    public boolean onUnbind(Intent intent) {
-        if (seekBarChanger != null)
-            seekBarChanger.cancel(true);
-        seekBarChanger = null;
-
-        Log.d(LOG_TAG, "Unbind with state:　" + ((state == PLAYING) ? "PLAYING" : "PAUSED" ));
-        return true;
-    }
 
     public int getState(){
         return state;
@@ -332,42 +321,24 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
 
     @Override
     public void play(int position) {
-        this.current_position = position;
-        playFetched(mNowPlaying.get(position).get(LoadingListTask.path));
+        this.mPlayPosition = position;
+        playFetched(mPlayQueue.get(position).getData());
     }
 
     public synchronized void playNext(){
-        if ((current_position+1) == mNowPlaying.size())
-            current_position = 0;
+        if ((mPlayPosition +1) == mPlayQueue.size())
+            mPlayPosition = 0;
         else
-            current_position++;
-        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
+            mPlayPosition++;
+        playFetched(mPlayQueue.get(mPlayPosition).getData());
     }
 
     public synchronized void playPrevious(){
-        if ((current_position-1) == -1)
-            current_position = mNowPlaying.size()-1;
+        if ((mPlayPosition -1) == -1)
+            mPlayPosition = mPlayQueue.size()-1;
         else
-            current_position--;
-        playFetched(mNowPlaying.get(current_position).get(LoadingListTask.path));
-    }
-
-    @Override
-    public void onDestroy() {
-
-        mMediaPlayer.stop();
-        mMediaPlayer.reset();
-        mMediaPlayer.release();
-
-        if (mHeadPhoneBroadcastReceiver != null)
-            unregisterReceiver(mHeadPhoneBroadcastReceiver);
-        if (mNotificationBroadcastReceiver != null)
-            unregisterReceiver(mNotificationBroadcastReceiver);
-        // store the music list
-//        mNotificationManager.cancel(PLAY_MUSIC_NOTIFICATION_ID);
-        stopForeground(true);
-        Log.d(LOG_TAG, LOG_TAG + " is onDestroy");
-        super.onDestroy();
+            mPlayPosition--;
+        playFetched(mPlayQueue.get(mPlayPosition).getData());
     }
 
     // play music selected
@@ -383,31 +354,33 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 // 切换状态，切换图标
                 changeState();
             }
-            if (seekBarChanger != null)
-                seekBarChanger.cancel(true);
-            // 每次播放前都要重置一下
+            if (mSeekBarTracker != null)
+                mSeekBarTracker.cancel(true);
             mMediaPlayer.reset();
             mMediaPlayer.setDataSource(path);
-            mMediaPlayer.prepare();
+            mMediaPlayer.prepareAsync();
 
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e){
             e.printStackTrace();
-        }catch (SecurityException e){
+        } catch (SecurityException e){
             e.printStackTrace();
-        }catch (IllegalStateException e){
+        } catch (IllegalStateException e){
             e.printStackTrace();
-        }catch (IOException e){
+        } catch (IOException e){
             e.printStackTrace();
         }
     }
 
-    // 开启追踪 SeekBar 变化的异步任务
-    public void setSeekBarTracker(int duration){
-        if (seekBarChanger != null){
-            seekBarChanger.cancel(true);
+    /**
+     * 追踪 MediaPlayer 的播放状态，更新 Activity 的 SeekBar
+     * @param duration
+     */
+    public void startSeekBarTracker (int duration) {
+        if (mSeekBarTracker != null){
+            mSeekBarTracker.cancel(true);
         }
-        seekBarChanger = null;
-        seekBarChanger = new AsyncTask<Integer, Void, Void>() {
+        mSeekBarTracker = null;
+        mSeekBarTracker = new AsyncTask<Integer, Void, Void>() {
 
             int ms = 0;
             @Override
@@ -416,9 +389,9 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                     while(mMediaPlayer != null && mMediaPlayer.getCurrentPosition() < params[0]){
                         if (state == PLAYING){
                             ms = mMediaPlayer.getCurrentPosition();
-                            mSeekBar.setProgress(ms);
+//                            mSeekBar.setProgress(ms);
                             // send to ui thread
-                            handler.obtainMessage(0, ms).sendToTarget();
+                            mSeekBarHandler.obtainMessage(0, ms).sendToTarget();
                         }
                         Thread.sleep(100);
                     }
@@ -429,71 +402,67 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
                 return null;
             }
         };
-        seekBarChanger.execute(duration);
+        mSeekBarTracker.execute(duration);
     }
 
     // custom notification with button
     public void showNotification(){
         mNotificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
         Notification.Builder builder = new Notification.Builder(this)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.logo)
                 .setContentTitle("Playing")
                 .setAutoCancel(false);
         mNotification = builder.build();
-        mNotification.bigContentView = getExpandView();
+//        mNotification.bigContentView = getExpandView();
         mNotification.flags |= Notification.FLAG_NO_CLEAR;
 //        mNotificationManager.notify(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
         startForeground(PLAY_MUSIC_NOTIFICATION_ID, mNotification);
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
-    }
 
     // 这是为了大屏的 Notification
     public RemoteViews getExpandView(){
-        RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.musicnotification);
+        RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.play_note);
 
 
-        int albumId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.albumId));
-        int songId = Integer.parseInt(mNowPlaying.get(current_position).get(LoadingListTask.songId));
+        int albumId = Integer.parseInt(mPlayQueue.get(mPlayPosition).getAlbum_id());
+        int songId = Integer.parseInt(mPlayQueue.get(mPlayPosition).get_id());
         Bitmap albumCover = AlbumCoverHelper.getArtwork(getApplicationContext(), songId, albumId, true, true);
 
         if (albumCover != null){
             // two ways to get the album cover
 //            Uri albumCoverUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), albumCover, null, null));
 //            mRemoteViews.setImageViewUri(R.id.notification_albumcover, albumCoverUri);
-            mRemoteViews.setImageViewBitmap(R.id.notification_albumcover, albumCover);
+            mRemoteViews.setImageViewBitmap(R.id.note_album_cover, albumCover);
         }
         else
-            mRemoteViews.setImageViewResource(R.id.notification_albumcover, R.drawable.ic_launcher);
+            mRemoteViews.setImageViewResource(R.id.note_album_cover, R.drawable.list_cover_alb);
 
-        mRemoteViews.setTextViewText(R.id.notification_artist, mNowPlaying.get(current_position).get(LoadingListTask.artistName));
-        mRemoteViews.setTextViewText(R.id.notification_songtitle, mNowPlaying.get(current_position).get(LoadingListTask.songName));
+        mRemoteViews.setTextViewText(R.id.single_name, mPlayQueue.get(mPlayPosition).getTitle());
+        mRemoteViews.setTextViewText(R.id.artist_name, mPlayQueue.get(mPlayPosition).getArtist());
 
         if(state == PLAYING){
-            mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_pause);
+            mRemoteViews.setImageViewResource(R.id.note_play, R.drawable.note_btn_pause_white);
         }else{
-            mRemoteViews.setImageViewResource(R.id.notification_play, R.drawable.song_play);
+            mRemoteViews.setImageViewResource(R.id.note_play, R.drawable.note_btn_play_white);
         }
 
         Intent playIntent = new Intent(NotificationBroadcastReceiver.PLAY_PAUSE);
         PendingIntent pIntentPlay = PendingIntent.getBroadcast(getApplicationContext(), 0, playIntent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_play, pIntentPlay);
+        mRemoteViews.setOnClickPendingIntent(R.id.note_play, pIntentPlay);
 
 
-        Intent previousIntent = new Intent(NotificationBroadcastReceiver.PLAY_PREVIOUS);
-        PendingIntent pIntentPrevious = PendingIntent.getBroadcast(getApplicationContext(), 0, previousIntent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pIntentPrevious);
+//        Intent previousIntent = new Intent(NotificationBroadcastReceiver.PLAY_PREVIOUS);
+//        PendingIntent pIntentPrevious = PendingIntent.getBroadcast(getApplicationContext(), 0, previousIntent, 0);
+//        mRemoteViews.setOnClickPendingIntent(R.id.notification_previous, pIntentPrevious);
 
         Intent nextIntent = new Intent(NotificationBroadcastReceiver.PLAY_NEXT);
         PendingIntent pIntentNext = PendingIntent.getBroadcast(getApplicationContext(), 0, nextIntent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_next, pIntentNext);
+        mRemoteViews.setOnClickPendingIntent(R.id.note_play_next, pIntentNext);
 
         Intent cancelIntent = new Intent(NotificationBroadcastReceiver.PLAYER_CANCEL);
         PendingIntent pIntentCancel = PendingIntent.getBroadcast(getApplicationContext(), 0, cancelIntent, 0);
-        mRemoteViews.setOnClickPendingIntent(R.id.notification_cancel, pIntentCancel);
+        mRemoteViews.setOnClickPendingIntent(R.id.note_close, pIntentCancel);
 
         return mRemoteViews;
     }

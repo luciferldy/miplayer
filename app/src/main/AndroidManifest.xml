@@ -8,11 +8,11 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".HomeActivity"
+            android:name=".ui.activity.HomeActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,11 +20,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".MusicPlayerActivity"
+        <activity android:name=".ui.activity.MusicPlayerActivity"
             android:launchMode="singleInstance">
-        </activity>
-
-        <activity android:name=".SongInAlbumOrArtActivity">
         </activity>
 
         <service android:name=".service.MusicPlayerService"></service>

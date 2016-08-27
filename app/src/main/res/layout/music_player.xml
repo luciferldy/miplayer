@@ -1,6 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/fm_run_bg">
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/play_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dip">
+
+        <ImageView
+            android:id="@+id/acb_back"
+            android:layout_width="22dip"
+            android:layout_height="22dip"
+            android:layout_marginLeft="17dip"
+            android:layout_centerVertical="true"
+            android:src="@drawable/actionbar_back"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="60dip"
+            android:layout_centerVertical="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/acb_single"
+                android:layout_width="wrap_content"
+                android:layout_height="18dip"
+                android:maxWidth="200dip"
+                android:singleLine="true"
+                android:textColor="@color/md_white"
+                android:text="Say it again" />
+
+            <TextView
+                android:id="@+id/acb_artist"
+                android:layout_width="wrap_content"
+                android:layout_height="14dip"
+                android:maxWidth="200dip"
+                android:singleLine="true"
+                android:textColor="@color/md_grey_700"
+                android:text="Frances"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/acb_share"
+            android:layout_width="22dip"
+            android:layout_height="22dip"
+            android:layout_marginRight="12dip"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/actionbar_share"/>
+
+    </RelativeLayout>
+    
+    <LinearLayout
+        android:id="@+id/play_control"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="7dip"
+        android:gravity="center"
+        android:orientation="horizontal">
+        
+        <ImageView
+            android:id="@+id/loop_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="11dip"
+            android:src="@drawable/play_icn_loop"/>
+
+        <ImageView
+            android:id="@+id/play_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_btn_prev"/>
+
+        <ImageView
+            android:id="@+id/play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_btn_play" />
+
+        <ImageView
+            android:id="@+id/play_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_btn_next"/>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="11dip"
+            android:src="@drawable/play_icn_src"/>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/play_pro_control"
+        android:layout_width="match_parent"
+        android:layout_height="18dip"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_above="@id/play_control">
+
+        <TextView
+            android:id="@+id/time_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7dip"
+            android:textColor="@color/md_white"
+            android:text="00:00"/>
+
+        <SeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="275dip"
+            android:layout_height="18dip"
+            android:layout_marginLeft="4dip"
+            android:layout_marginRight="4dip"
+            android:paddingLeft="3dip"
+            android:paddingRight="3dip"
+            android:maxHeight="8dip"
+            android:minHeight="8dip"
+            android:progressDrawable="@drawable/play_plybar"
+            android:thumb="@drawable/play_plybar_btn"
+            android:thumbOffset="0.66dip"
+            android:progress="0"/>
+
+        <TextView
+            android:id="@+id/time_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="7dip"
+            android:textColor="@color/md_grey_500"
+            android:text="02:53"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/more_control"
+        android:layout_width="match_parent"
+        android:layout_height="85dip"
+        android:layout_above="@id/play_pro_control"
+        android:layout_marginBottom="4dip"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/play_iv_love"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="11dip"
+            android:src="@drawable/play_icn_love"/>
+
+        <ImageView
+            android:id="@+id/play_iv_dld"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="11dip"
+            android:src="@drawable/play_icn_dld"/>
+
+        <ImageView
+            android:id="@+id/play_iv_cmt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="11dip"
+            android:src="@drawable/play_icn_cmt"/>
+
+        <ImageView
+            android:id="@+id/play_iv_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/play_icn_more"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="268dip"
+        android:layout_above="@id/more_control">
+
+        <View
+            android:layout_width="268dip"
+            android:layout_height="268dip"
+            android:layout_gravity="center"
+            android:background="@drawable/placeholder_disk_play_program"/>
+
+        <ImageView
+            android:id="@+id/album_cover"
+            android:layout_width="138dip"
+            android:layout_height="138dip"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
+
+</RelativeLayout>

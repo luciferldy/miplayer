@@ -1,74 +1,74 @@
 package com.main.maybe.miplayer.ui.adapter;
 
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.R;
-import com.main.maybe.miplayer.task.LoadingListTask;
+import com.main.maybe.miplayer.model.AlbumBean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Maybe霏 on 2015/5/16.
  */
-public class AlbumListAdapter extends BaseAdapter {
+public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.AlbumViewHolder> {
 
-    private ArrayList<HashMap<String, String>> albums = new ArrayList<>();
-    private LayoutInflater mInflater;
+    private ArrayList<AlbumBean> albums = new ArrayList<>();
 
-    public AlbumListAdapter(ArrayList<HashMap<String, String>> albums, LayoutInflater mInflater){
-        this.albums = albums;
-        this.mInflater = mInflater;
+    public AlbumListAdapter(){
+        this.albums = new ArrayList<>();
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        AlbumItem item;
-        if (convertView==null){
-            item = new AlbumItem();
-            convertView = mInflater.inflate(R.layout.albumlistitem, parent, false);
-
-            item.albumCover = (ImageView)convertView.findViewById(R.id.album_cover);
-            item.albumName = (TextView)convertView.findViewById(R.id.album_name);
-            item.artistName = (TextView)convertView.findViewById(R.id.album_artist_name);
-            item.songNumber = (TextView)convertView.findViewById(R.id.album_song_number);
-
-            convertView.setTag(item);
-        }else{
-            item = (AlbumItem)convertView.getTag();
-        }
-
-        item.albumName.setText(albums.get(position).get(LoadingListTask.albumName));
-        item.artistName.setText(albums.get(position).get(LoadingListTask.artistName));
-        item.songNumber.setText(albums.get(position).get(LoadingListTask.songNumber));
-
-        return convertView;
+    public AlbumViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View root = inflater.inflate(R.layout.album_list_item, parent, false);
+        AlbumViewHolder holder = new AlbumViewHolder(root);
+        return holder;
     }
 
     @Override
-    public long getItemId(int position) {
-        return 0;
+    public void onBindViewHolder(AlbumViewHolder holder, int position) {
+        holder.mAlbumName.setText(albums.get(position).getAlbum());
+        holder.mAlbumArtist.setText(albums.get(position).getArtist());
     }
 
     @Override
-    public Object getItem(int position) {
-        return null;
-    }
-
-    @Override
-    public int getCount() {
+    public int getItemCount() {
         return albums.size();
     }
 
-    public class AlbumItem{
-        ImageView albumCover;
-        TextView albumName;
-        TextView artistName;
-        TextView songNumber;
+    /**
+     * update albums
+     * @param albums
+     */
+    public void updateData(List<AlbumBean> albums) {
+        if (albums != null && !albums.isEmpty()) {
+            this.albums.clear();
+            this.albums.addAll(albums);
+        }
+    }
+
+    /**
+     * album list recycleview holder
+     * type: friendly
+     */
+    static class AlbumViewHolder extends RecyclerView.ViewHolder{
+
+        ImageView mAlbumCover;
+        TextView mAlbumName;
+        TextView mAlbumArtist;
+
+        public AlbumViewHolder(View itemView) {
+            super(itemView);
+            mAlbumCover = (ImageView) itemView.findViewById(R.id.album_cover);
+            mAlbumName = (TextView) itemView.findViewById(R.id.album_name);
+            mAlbumArtist = (TextView) itemView.findViewById(R.id.album_artist);
+        }
     }
 }
