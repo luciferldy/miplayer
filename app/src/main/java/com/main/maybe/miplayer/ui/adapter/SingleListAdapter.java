@@ -53,7 +53,6 @@ public class SingleListAdapter extends RecyclerView.Adapter<SingleListAdapter.Si
         } else {
             Logger.i(LOG_TAG, "updateData but arg is null or empty.");
         }
-
     }
 
     public static class SingleViewHolder extends RecyclerView.ViewHolder {

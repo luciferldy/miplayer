@@ -45,7 +45,6 @@ public class HomeFragment extends Fragment implements BaseView {
     private int position;
 
     private LocalMusicPresenter mPresenter;
-    private Subscription mSubscription;
 
     public static HomeFragment newInstance(int position){
         HomeFragment f = new HomeFragment();
@@ -96,9 +95,6 @@ public class HomeFragment extends Fragment implements BaseView {
 
     @Override
     public void onDestroy() {
-        if (mSubscription != null && mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
-        }
         super.onDestroy();
     }
 
@@ -133,12 +129,12 @@ public class HomeFragment extends Fragment implements BaseView {
                     adapter.updateData(singleBeen);
             }
         };
-        mSubscription = Observable.create(new Observable.OnSubscribe<List<SingleBean>>() {
+        Observable.create(new Observable.OnSubscribe<List<SingleBean>>() {
             @Override
             public void call(Subscriber<? super List<SingleBean>> subscriber) {
                 subscriber.onNext(mPresenter.getSingle());
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
+        }).subscribeOn(Schedulers.immediate()).subscribe(observer);
         return root;
     }
 
@@ -168,12 +164,12 @@ public class HomeFragment extends Fragment implements BaseView {
                     adapter.updateData(singleBeen);
             }
         };
-        mSubscription = Observable.create(new Observable.OnSubscribe<List<ArtistBean>>() {
+        Observable.create(new Observable.OnSubscribe<List<ArtistBean>>() {
             @Override
             public void call(Subscriber<? super List<ArtistBean>> subscriber) {
                 subscriber.onNext(mPresenter.getArtist());
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(observer);
+        }).subscribeOn(Schedulers.immediate()).subscribe(observer);
         return root;
     }
 
@@ -191,7 +187,8 @@ public class HomeFragment extends Fragment implements BaseView {
                 return mPresenter.getAlbum();
             }
         });
-        mSubscription = single.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+
+        single.subscribeOn(Schedulers.immediate())
                 .subscribe(new SingleSubscriber<List<AlbumBean>>() {
                     @Override
                     public void onSuccess(List<AlbumBean> value) {
@@ -215,6 +212,7 @@ public class HomeFragment extends Fragment implements BaseView {
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
         FolderListAdapter adapter = new FolderListAdapter();
         rv.setAdapter(adapter);
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         return root;
     }
 }

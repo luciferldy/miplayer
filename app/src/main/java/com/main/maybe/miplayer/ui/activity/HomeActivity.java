@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -43,7 +44,6 @@ public class HomeActivity extends AppCompatActivity {
     private MusicPlayerServiceBinder mServiceBinder;
 
     private ViewPager mPagers;
-    private HomeVPAdapter mHomeVPAdapter;
     private TextView mSongName;
     private TextView mArtistName;
     private ImageView mPlay;
@@ -105,9 +105,10 @@ public class HomeActivity extends AppCompatActivity {
     public void initViewPaper() {
 
         mPagers = (ViewPager) findViewById(R.id.categories_layout);
-        mHomeVPAdapter = new HomeVPAdapter(getSupportFragmentManager());
-        mPagers.setAdapter(mHomeVPAdapter);
+        mPagers.setAdapter(new HomeVPAdapter(getSupportFragmentManager()));
 
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
+        tabLayout.setupWithViewPager(mPagers);
     }
 
     public void initPlayBar() {
