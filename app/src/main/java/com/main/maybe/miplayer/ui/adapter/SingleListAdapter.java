@@ -64,7 +64,7 @@ public class SingleListAdapter extends RecyclerView.Adapter<SingleListAdapter.Si
         public SingleViewHolder(View itemView) {
             super(itemView);
             mSingleName = (TextView) itemView.findViewById(R.id.single_name);
-            mArtistName = (TextView) itemView.findViewById(R.id.artist_name);
+            mArtistName = (TextView) itemView.findViewById(R.id.album_artist);
         }
     }
 }

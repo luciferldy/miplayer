@@ -1,9 +1,11 @@
 package com.main.maybe.miplayer.ui.activity;
 
+import android.Manifest;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.ViewPager;
@@ -34,6 +36,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = HomeActivity.class.getSimpleName(); // class name
 
+    private static final int MEDIA_STORE_PERMISSION_REQUEST_CODE = 1009;
+
     private MusicPlayerService mMusicPlayerService;
     private ServiceConnection mServiceConnection;
     private MusicPlayerServiceBinder mServiceBinder;
@@ -57,10 +61,45 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
+        if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MEDIA_STORE_PERMISSION_REQUEST_CODE);
+        }
+
+        else
+        {
+            initViews();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                              String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MEDIA_STORE_PERMISSION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initViews();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+
+    }
+
+    public void initViews() {
         setContentView(R.layout.activity_main);
         initViewPaper();
         initPlayBar();
-
     }
 
     public void initViewPaper() {

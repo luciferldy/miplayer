@@ -9,7 +9,7 @@ import com.main.maybe.miplayer.ui.fragment.HomeFragment;
 /**
  * Created by Lucifer on 2015/3/24.
  */
-public class HomeVPAdapter extends FragmentPagerAdapter{
+public class HomeVPAdapter extends FragmentPagerAdapter {
 
     private final String[] TITLES = {"单曲", "歌手", "专辑", "文件夹"};
 

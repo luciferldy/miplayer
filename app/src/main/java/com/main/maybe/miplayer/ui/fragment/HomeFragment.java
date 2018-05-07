@@ -3,6 +3,7 @@ package com.main.maybe.miplayer.ui.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -38,7 +39,7 @@ import rx.schedulers.Schedulers;
 /**
  * Created by Lucifer on 2015/3/25.
  */
-public class HomeFragment extends Fragment implements BaseView{
+public class HomeFragment extends Fragment implements BaseView {
 
     private static final String ARG_POSITION = "position";
     private int position;
@@ -112,6 +113,7 @@ public class HomeFragment extends Fragment implements BaseView{
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
         final SingleListAdapter adapter = new SingleListAdapter();
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv.setAdapter(adapter);
         // create an observer
         Observer<List<SingleBean>> observer = new Observer<List<SingleBean>>() {
@@ -146,6 +148,7 @@ public class HomeFragment extends Fragment implements BaseView{
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
         final ArtistListAdapter adapter = new ArtistListAdapter();
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv.setAdapter(adapter);
         // create an observer
         Observer<List<ArtistBean>> observer = new Observer<List<ArtistBean>>() {
@@ -181,6 +184,7 @@ public class HomeFragment extends Fragment implements BaseView{
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
         final AlbumListAdapter adapter = new AlbumListAdapter();
         rv.setAdapter(adapter);
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         Single<List<AlbumBean>> single = Single.fromCallable(new Callable<List<AlbumBean>>() {
             @Override
             public List<AlbumBean> call() throws Exception {
