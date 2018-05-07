@@ -8,8 +8,8 @@ __项目正在重构，大家可以 star 但是先不要 clone 下来看代码�
 要求
 -------
 
-- Android SDK 21
-- Gradle 2.2.1
+- Android SDK 23
+- Gradle 3.1.2
 
 开始
 ---
