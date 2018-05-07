@@ -2,7 +2,7 @@ package com.main.maybe.miplayer.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.main.maybe.miplayer.R;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 /**
  * Created by Lucifer on 2015/5/19.
  */
-public class MusicPlayerActivity extends ActionBarActivity {
+public class MusicPlayerActivity extends AppCompatActivity {
 
     private ArrayList<HashMap<String, String>> songs = new ArrayList<>();
     private final String LOG_TAG = MusicPlayerActivity.class.getSimpleName();
