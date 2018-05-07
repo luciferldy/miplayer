@@ -24,7 +24,6 @@ import com.main.maybe.miplayer.receiver.NotificationBroadcastReceiver;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.model.SingleBean;
-import com.main.maybe.miplayer.task.LoadingListTask;
 import com.main.maybe.miplayer.util.CommonUtils;
 import com.main.maybe.miplayer.util.Logger;
 
@@ -33,7 +32,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -425,8 +423,8 @@ public class MusicPlayerService extends Service implements MusicPlayerServiceInt
         RemoteViews mRemoteViews = new RemoteViews(getPackageName(), R.layout.play_note);
 
 
-        int albumId = Integer.parseInt(mPlayQueue.get(mPlayPosition).getAlbum_id());
-        int songId = Integer.parseInt(mPlayQueue.get(mPlayPosition).get_id());
+        int albumId = Integer.parseInt(mPlayQueue.get(mPlayPosition).getAlbumId());
+        int songId = Integer.parseInt(mPlayQueue.get(mPlayPosition).getId());
         Bitmap albumCover = AlbumCoverHelper.getArtwork(getApplicationContext(), songId, albumId, true, true);
 
         if (albumCover != null){

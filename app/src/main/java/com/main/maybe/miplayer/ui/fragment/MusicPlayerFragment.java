@@ -8,7 +8,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
@@ -16,14 +15,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.main.maybe.miplayer.AlbumCoverHelper;
 import com.main.maybe.miplayer.model.SingleBean;
-import com.main.maybe.miplayer.ui.activity.HomeActivity;
 import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
@@ -32,7 +29,6 @@ import com.main.maybe.miplayer.task.LoadingListTask;
 import com.main.maybe.miplayer.util.CommonUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -130,8 +126,8 @@ public class MusicPlayerFragment extends Fragment {
                 playTitle.setText(currentSong.getTitle());
                 playAlbum.setText(currentSong.getAlbum());
                 playArtist.setText(currentSong.getArtist());
-                int userId = Integer.parseInt(currentSong.get_id());
-                int albumId = Integer.parseInt(currentSong.getAlbum_id());
+                int userId = Integer.parseInt(currentSong.getId());
+                int albumId = Integer.parseInt(currentSong.getAlbumId());
                 playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), userId, albumId, true, false));
                 mCurrentTime.setText("00:00");
                 mTotalTime.setText(CommonUtils.timeFormatMs2Str(Integer.parseInt(currentSong.getDuration())));
@@ -264,8 +260,8 @@ public class MusicPlayerFragment extends Fragment {
                     playAlbum.setText(currentSong.getAlbum());
                     playArtist.setText(currentSong.getArtist());
                     mTotalTime.setText(CommonUtils.timeFormatMs2Str(Integer.parseInt(currentSong.getDuration())));
-                    int songId = Integer.parseInt(currentSong.get_id());
-                    int albumId = Integer.parseInt(currentSong.getAlbum_id());
+                    int songId = Integer.parseInt(currentSong.getId());
+                    int albumId = Integer.parseInt(currentSong.getAlbumId());
                     playAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getActivity(), songId, albumId, true, false));
                     mSeekBar.setMax(Integer.parseInt(currentSong.getDuration()));
                     mSeekBar.setProgress(mService.getPlayingPosition());

@@ -162,8 +162,8 @@ public class HomeActivity extends AppCompatActivity {
             mArtistName.setText(currentSong.getArtist());
 
             Logger.i(LOG_TAG, "list has " + songs.size() + "");
-            int songId = Integer.parseInt(currentSong.get_id());
-            int albumId = Integer.parseInt(currentSong.getAlbum_id());
+            int songId = Integer.parseInt(currentSong.getId());
+            int albumId = Integer.parseInt(currentSong.getAlbumId());
 
             mAlbumCover.setImageBitmap(AlbumCoverHelper.getArtwork(getApplication(), songId, albumId, true, true));
         }

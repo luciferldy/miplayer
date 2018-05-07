@@ -1,44 +1,19 @@
 package com.main.maybe.miplayer.model;
 
+import lombok.Data;
+
 /**
  * Created by Lucifer on 2016/8/23.
  */
+@Data
 public class ArtistBean {
 
-    String _id;
-    String artist;
-    String numAlbums;
-    String numTracks;
+    private String Id;
 
-    public String get_id() {
-        return _id;
-    }
+    private String artist;
 
-    public void set_id(String _id) {
-        this._id = _id;
-    }
+    private String numAlbums;
 
-    public String getArtist() {
-        return artist;
-    }
+    private String numTracks;
 
-    public void setArtist(String artist) {
-        this.artist = artist;
-    }
-
-    public String getNumAlbums() {
-        return numAlbums;
-    }
-
-    public void setNumAlbums(String numAlbums) {
-        this.numAlbums = numAlbums;
-    }
-
-    public String getNumTracks() {
-        return numTracks;
-    }
-
-    public void setNumTracks(String numTracks) {
-        this.numTracks = numTracks;
-    }
 }
