@@ -6,12 +6,19 @@ package com.main.maybe.miplayer;
 public interface MusicPlayerServiceBinderCallBack {
 
     void setCurrentTime(String time);
+
     void setTotalTime(String time);
+
     void setMusicTitle(String title);
+
     void setMusicArtist(String artist);
+
     void setMusicAlbum(String album);
+
     void setAlbumCover(int songId, int albumId);
+
     void setImagePlay();
+
     void setImagePaused();
 
 }

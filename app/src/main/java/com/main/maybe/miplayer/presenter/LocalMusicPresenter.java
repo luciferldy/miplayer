@@ -1,7 +1,6 @@
 package com.main.maybe.miplayer.presenter;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
@@ -49,11 +48,11 @@ public class LocalMusicPresenter implements BasePresenter{
             SingleBean bean;
             while (cursor.moveToNext()){
                 bean = new SingleBean();
-                bean.set_id(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
+                bean.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media._ID)));
                 bean.setTitle(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)));
-                bean.setArtist_id(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
+                bean.setArtistId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID)));
                 bean.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
-                bean.setAlbum_id(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
+                bean.setAlbumId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)));
                 bean.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)));
                 bean.setData(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
                 singles.add(bean);
@@ -84,7 +83,7 @@ public class LocalMusicPresenter implements BasePresenter{
             ArtistBean bean;
             while (cursor.moveToNext()){
                 bean = new ArtistBean();
-                bean.set_id(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
+                bean.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists._ID)));
                 bean.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.ARTIST)));
                 bean.setNumAlbums(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)));
                 bean.setNumTracks(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_TRACKS)));
@@ -116,7 +115,8 @@ public class LocalMusicPresenter implements BasePresenter{
             AlbumBean bean;
             while (cursor.moveToNext()){
                 bean = new AlbumBean();
-                bean.set_id(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
+
+                bean.setId(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)));
                 bean.setAlbum(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM)));
                 bean.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ARTIST)));
                 bean.setNumSongs(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)));
