@@ -32,6 +32,9 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -43,13 +46,16 @@ public class HomeActivity extends AppCompatActivity {
     private ServiceConnection mServiceConnection;
     private MusicPlayerServiceBinder mServiceBinder;
 
-    private ViewPager mPagers;
-    private TextView mSongName;
-    private TextView mArtistName;
-    private ImageView mPlay;
-    private ImageView mPlayNext;
-    private RelativeLayout mPlayBarContainer;
-    private ImageView mAlbumCover;
+    @BindView(R.id.categories_layout) ViewPager mPagers;
+    @BindView(R.id.sliding_tabs) TabLayout mTabLayout;
+
+    @BindView(R.id.song_name) TextView mSongName;
+    @BindView(R.id.artist_name) TextView mArtistName;
+    @BindView(R.id.play_bar_play) ImageView mPlay;
+    @BindView(R.id.play_bar_next) ImageView mPlayNext;
+
+    @BindView(R.id.play_bar_container) RelativeLayout mPlayBarContainer;
+    @BindView(R.id.album_cover) ImageView mAlbumCover;
 
     private boolean mBound = false;
     private int mState;
@@ -98,22 +104,17 @@ public class HomeActivity extends AppCompatActivity {
 
     public void initViews() {
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
         initViewPaper();
         initPlayBar();
     }
 
     public void initViewPaper() {
-
-        mPagers = (ViewPager) findViewById(R.id.categories_layout);
         mPagers.setAdapter(new HomeVPAdapter(getSupportFragmentManager()));
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(mPagers);
+        mTabLayout.setupWithViewPager(mPagers);
     }
 
     public void initPlayBar() {
-
-        mPlayBarContainer = (RelativeLayout) findViewById(R.id.play_bar_container);
         mPlayBarContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,12 +126,6 @@ public class HomeActivity extends AppCompatActivity {
 //                startActivity(intent);
             }
         });
-
-        mAlbumCover = (ImageView) findViewById(R.id.album_cover);
-        mSongName = (TextView) findViewById(R.id.song_name);
-        mArtistName = (TextView) findViewById(R.id.artist_name);
-        mPlay = (ImageView) findViewById(R.id.play_bar_play);
-        mPlayNext = (ImageView) findViewById(R.id.play_bar_next);
 
         mPlay.setOnClickListener(new View.OnClickListener() {
 

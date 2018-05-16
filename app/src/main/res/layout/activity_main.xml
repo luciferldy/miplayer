@@ -10,11 +10,12 @@
         layout="@layout/content_main"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_marginBottom="50dp"
         android:layout_below="@id/main_tool_bar" />
 
     <include layout="@layout/play_bar"
         android:layout_width="match_parent"
-        android:layout_height="50dip"
+        android:layout_height="50dp"
         android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
