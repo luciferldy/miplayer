@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.model.AlbumBean;
 import com.main.maybe.miplayer.model.ArtistBean;
+import com.main.maybe.miplayer.model.FolderBean;
 import com.main.maybe.miplayer.model.SingleBean;
 import com.main.maybe.miplayer.presenter.LocalMusicPresenter;
 import com.main.maybe.miplayer.ui.adapter.AlbumListAdapter;
@@ -24,6 +25,7 @@ import com.main.maybe.miplayer.ui.adapter.FolderListAdapter;
 import com.main.maybe.miplayer.ui.adapter.SingleListAdapter;
 import com.main.maybe.miplayer.ui.view.BaseView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -108,33 +110,9 @@ public class HomeFragment extends Fragment implements BaseView {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
-        final SingleListAdapter adapter = new SingleListAdapter();
+        final SingleListAdapter adapter = new SingleListAdapter(getActivity(), mPresenter.getSingle());
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv.setAdapter(adapter);
-        // create an observer
-        Observer<List<SingleBean>> observer = new Observer<List<SingleBean>>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(List<SingleBean> singleBeen) {
-                if (singleBeen != null && !singleBeen.isEmpty())
-                    adapter.updateData(singleBeen);
-            }
-        };
-        Observable.create(new Observable.OnSubscribe<List<SingleBean>>() {
-            @Override
-            public void call(Subscriber<? super List<SingleBean>> subscriber) {
-                subscriber.onNext(mPresenter.getSingle());
-            }
-        }).subscribeOn(Schedulers.immediate()).subscribe(observer);
         return root;
     }
 
@@ -143,33 +121,9 @@ public class HomeFragment extends Fragment implements BaseView {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
-        final ArtistListAdapter adapter = new ArtistListAdapter();
+        final ArtistListAdapter adapter = new ArtistListAdapter(getActivity(), mPresenter.getArtist());
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         rv.setAdapter(adapter);
-        // create an observer
-        Observer<List<ArtistBean>> observer = new Observer<List<ArtistBean>>() {
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(List<ArtistBean> singleBeen) {
-                if (singleBeen != null && !singleBeen.isEmpty())
-                    adapter.updateData(singleBeen);
-            }
-        };
-        Observable.create(new Observable.OnSubscribe<List<ArtistBean>>() {
-            @Override
-            public void call(Subscriber<? super List<ArtistBean>> subscriber) {
-                subscriber.onNext(mPresenter.getArtist());
-            }
-        }).subscribeOn(Schedulers.immediate()).subscribe(observer);
         return root;
     }
 
@@ -178,30 +132,9 @@ public class HomeFragment extends Fragment implements BaseView {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
-        final AlbumListAdapter adapter = new AlbumListAdapter();
+        final AlbumListAdapter adapter = new AlbumListAdapter(getActivity(), mPresenter.getAlbum());
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
-        Single<List<AlbumBean>> single = Single.fromCallable(new Callable<List<AlbumBean>>() {
-            @Override
-            public List<AlbumBean> call() throws Exception {
-                return mPresenter.getAlbum();
-            }
-        });
-
-        single.subscribeOn(Schedulers.immediate())
-                .subscribe(new SingleSubscriber<List<AlbumBean>>() {
-                    @Override
-                    public void onSuccess(List<AlbumBean> value) {
-                        if ( value != null && !value.isEmpty()) {
-                            adapter.updateData(value);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable error) {
-
-                    }
-                });
         return root;
     }
 
@@ -210,7 +143,7 @@ public class HomeFragment extends Fragment implements BaseView {
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         LinearLayout root = (LinearLayout)inflater.inflate(R.layout.base_list, null);
         RecyclerView rv = (RecyclerView) root.findViewById(R.id.rv_ls);
-        FolderListAdapter adapter = new FolderListAdapter();
+        FolderListAdapter adapter = new FolderListAdapter(getActivity(), new ArrayList<FolderBean>());
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
         return root;

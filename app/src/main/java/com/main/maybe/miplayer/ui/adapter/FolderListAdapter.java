@@ -1,51 +1,24 @@
 package com.main.maybe.miplayer.ui.adapter;
 
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.content.Context;
 
-import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.model.FolderBean;
+import com.main.maybe.miplayer.ui.adapter.base.ListAdapter;
+import com.main.maybe.miplayer.ui.view.FolderListItemView;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Lucifer on 2016/8/22.
  */
-public class FolderListAdapter extends RecyclerView.Adapter<FolderListAdapter.FolderViewHolder> {
+public class FolderListAdapter extends ListAdapter<FolderBean, FolderListItemView> {
 
-    private ArrayList<FolderBean> folders;
-
-    public FolderListAdapter() {
-        folders = new ArrayList<>();
+    public FolderListAdapter(Context context, List<FolderBean> data) {
+        super(context, data);
     }
 
     @Override
-    public FolderViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(FolderViewHolder holder, int position) {
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return folders.size();
-    }
-
-    static class FolderViewHolder extends RecyclerView.ViewHolder {
-
-        TextView mFolderName;
-        TextView mSongCount;
-
-        public FolderViewHolder(View itemView) {
-            super(itemView);
-
-            mFolderName = (TextView) itemView.findViewById(R.id.folder_name);
-            mSongCount = (TextView) itemView.findViewById(R.id.song_count);
-        }
+    protected FolderListItemView createView(Context context) {
+        return new FolderListItemView(context);
     }
 }

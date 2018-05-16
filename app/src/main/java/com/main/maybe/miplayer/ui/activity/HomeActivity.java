@@ -21,7 +21,7 @@ import com.main.maybe.miplayer.AlbumCoverHelper;
 import com.main.maybe.miplayer.MusicPlayerServiceBinderCallBack;
 import com.main.maybe.miplayer.R;
 import com.main.maybe.miplayer.model.SingleBean;
-import com.main.maybe.miplayer.ui.adapter.HomeVPAdapter;
+import com.main.maybe.miplayer.ui.adapter.HomeViewPagerAdapter;
 import com.main.maybe.miplayer.binder.MusicPlayerServiceBinder;
 import com.main.maybe.miplayer.service.MusicPlayerService;
 import com.main.maybe.miplayer.util.CommonUtils;
@@ -110,7 +110,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void initViewPaper() {
-        mPagers.setAdapter(new HomeVPAdapter(getSupportFragmentManager()));
+        mPagers.setAdapter(new HomeViewPagerAdapter(getSupportFragmentManager()));
         mTabLayout.setupWithViewPager(mPagers);
     }
 

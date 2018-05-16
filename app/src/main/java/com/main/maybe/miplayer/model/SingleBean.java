@@ -9,10 +9,8 @@ import lombok.Data;
 @Data
 public class SingleBean {
 
-    // unique id in db
-    private String Id;
+    private String id;
 
-    // duration
     private String duration;
 
     private String title;

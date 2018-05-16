@@ -10,13 +10,10 @@ import lombok.ToString;
 @Data
 public class AlbumBean {
 
-    // unique id
-    private String Id;
+    private String id;
 
-    // album name
     private String album;
 
-    // artist
     private String artist;
 
     private String numSongs;
