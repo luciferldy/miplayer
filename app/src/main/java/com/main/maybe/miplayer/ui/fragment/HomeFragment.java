@@ -14,10 +14,7 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.LinearLayout;
 
 import com.main.maybe.miplayer.R;
-import com.main.maybe.miplayer.model.AlbumBean;
-import com.main.maybe.miplayer.model.ArtistBean;
 import com.main.maybe.miplayer.model.FolderBean;
-import com.main.maybe.miplayer.model.SingleBean;
 import com.main.maybe.miplayer.presenter.LocalMusicPresenter;
 import com.main.maybe.miplayer.ui.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.ui.adapter.ArtistListAdapter;
@@ -26,17 +23,6 @@ import com.main.maybe.miplayer.ui.adapter.SingleListAdapter;
 import com.main.maybe.miplayer.ui.view.BaseView;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Single;
-import rx.SingleSubscriber;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * Created by Lucifer on 2015/3/25.
