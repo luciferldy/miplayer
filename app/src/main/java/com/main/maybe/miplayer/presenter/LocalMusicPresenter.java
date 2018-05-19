@@ -9,6 +9,7 @@ import com.main.maybe.miplayer.model.AlbumBean;
 import com.main.maybe.miplayer.model.ArtistBean;
 import com.main.maybe.miplayer.model.FolderBean;
 import com.main.maybe.miplayer.model.SingleBean;
+import com.main.maybe.miplayer.presenter.base.BasePresenter;
 import com.main.maybe.miplayer.ui.view.base.BaseView;
 import com.main.maybe.miplayer.util.Logger;
 
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * Created by Lucifer on 2016/8/22.
  */
-public class LocalMusicPresenter implements BasePresenter{
+public class LocalMusicPresenter implements BasePresenter {
 
     private static final String LOG_TAG = LocalMusicPresenter.class.getSimpleName();
 
