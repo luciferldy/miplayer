@@ -20,7 +20,7 @@ import com.main.maybe.miplayer.ui.adapter.AlbumListAdapter;
 import com.main.maybe.miplayer.ui.adapter.ArtistListAdapter;
 import com.main.maybe.miplayer.ui.adapter.FolderListAdapter;
 import com.main.maybe.miplayer.ui.adapter.SingleListAdapter;
-import com.main.maybe.miplayer.ui.view.BaseView;
+import com.main.maybe.miplayer.ui.view.base.BaseView;
 
 import java.util.ArrayList;
 

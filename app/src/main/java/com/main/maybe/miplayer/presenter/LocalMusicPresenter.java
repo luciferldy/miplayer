@@ -9,7 +9,7 @@ import com.main.maybe.miplayer.model.AlbumBean;
 import com.main.maybe.miplayer.model.ArtistBean;
 import com.main.maybe.miplayer.model.FolderBean;
 import com.main.maybe.miplayer.model.SingleBean;
-import com.main.maybe.miplayer.ui.view.BaseView;
+import com.main.maybe.miplayer.ui.view.base.BaseView;
 import com.main.maybe.miplayer.util.Logger;
 
 import java.util.ArrayList;
